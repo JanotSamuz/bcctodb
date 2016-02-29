@@ -12,3 +12,6 @@ Détail source : édition numérique/relecture et vérifications par Jean-Marie 
 <br>
 <br>
 Language du projet : JAVA
+<br>
+<br>
+Statut : en développement
