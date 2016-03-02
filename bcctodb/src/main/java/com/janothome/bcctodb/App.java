@@ -8,8 +8,12 @@ public class App
 {
     public static void main( String[] args )
     {
-    	BCCEpub bccEpub = new BCCEpub();
-        System.out.println("Hello World!");
-        bccEpub.Read();
+        //System.out.println("Hello World!");
+    	
+    	//BCCEpub bccEpub = new BCCEpub();
+        //bccEpub.Read();
+    	    	
+    	BCCXhtml bccXhtml = new BCCXhtml();
+    	bccXhtml.Read();
     }
 }

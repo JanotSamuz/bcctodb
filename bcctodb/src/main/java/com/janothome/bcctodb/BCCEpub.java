@@ -36,7 +36,6 @@ public class BCCEpub {
 	 * 
 	 */
 	public BCCEpub() {
-		super();
 		// Initialisation des paramètres
 		this.BCCPath = "H:\\Documents\\Projet-BIBLE\\Bible_Crampon_1923_complete\\Bible_Crampon_1923_missionweb_upgraded.epub";
 	}
