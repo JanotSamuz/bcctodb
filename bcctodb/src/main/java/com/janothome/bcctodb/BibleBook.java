@@ -4,7 +4,7 @@
 package com.janothome.bcctodb;
 
 /**
- * @author PZGK7230
+ * @author Janot Samuz (janotsamuz+github@gmail.com)
  *
  */
 public class BibleBook {

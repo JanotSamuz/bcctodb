@@ -11,7 +11,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubReader;
 
 /**
- * @author PZGK7230
+ * @author Janot Samuz (janotsamuz+github@gmail.com)
  *
  */
 public class BCCEpub {

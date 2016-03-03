@@ -12,7 +12,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 /**
- * @author PZGK7230
+ * @author Janot Samuz (janotsamuz+github@gmail.com)
  *
  */
 public class BCCXhtml {
