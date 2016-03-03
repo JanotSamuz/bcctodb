@@ -21,7 +21,7 @@ public class BCCXhtml {
 	 * 
 	 */
 	public BCCXhtml() {
-		// TODO Auto-generated constructor stub
+		super();
 	}
 	
 	public void Read() {
@@ -43,6 +43,16 @@ public class BCCXhtml {
 			System.out.println("Erreur");
 		else
 			System.out.println("element: " + el.text());
+		
+		
+		Bible BCCbible = new Bible("Bible Chanoine Crampon");
+		BCCbible.setVersion("1.0");
+		BCCbible.setLongName("La Saint Bible d'après les textes originaux par l'abbé Augustin Crampon, chanoine d'Amiens - Edition 1923");
+		BCCbible.setDigitalization("Edition numérique/relecture et vérifications par Jean-Marie WEBER pour www.mission-web.com");
+		BCCbible.setEdition("Edition réisée par les Pères de la Cie de Jésus avec la collaboration de Professeurs de S. Sulpice - SOCIÉTÉ DE S. JEAN L'ÉVANGÉLISTE - 1923");
+		BCCbible.setLicence("Cette oeuvre est mise à disposition selon les termes de la Licence Creative Commons Attribution - Pas d'Utilisation Commerciale - Partage dans les Mêmes Conditions 3.0 non transposé.");
+		BCCbible.setTradition("Christianisme");
+		BCCbible.setChurch("Eglise catholique romaine");
 		
 	}
 
