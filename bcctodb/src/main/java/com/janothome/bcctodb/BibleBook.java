@@ -3,53 +3,103 @@
  */
 package com.janothome.bcctodb;
 
+import java.io.Serializable;
+
 /**
  * @author Janot Samuz (janotsamuz+github@gmail.com)
  *
  */
-public class BibleBook {
+public class BibleBook implements Serializable {
 
-	private int id;
-	private String title;
-	private String sourceFile;
-	
-	public BibleBook(){}
-	
 	/**
 	 * 
 	 */
-	public BibleBook(String title, String sourceFile) {
+	private static final long serialVersionUID = 1L;
+	private String bookName;
+	private String bookAbbreviation;
+    private Integer bookNumber;
+    private String bookTestament;
+    private String sourceFile;
+	
+	/**
+	 * @param bookName
+	 * @param bookAbbreviation
+	 * @param bookNumber
+	 * @param bookTestament
+	 * @param sourceFile
+	 */
+	public BibleBook(String bookName, String bookAbbreviation, Integer bookNumber, String bookTestament,
+			String sourceFile) {
 		super();
-		setTitle(title);
+		setBookName(bookName);
+		setBookAbbreviation(bookAbbreviation);
+		setBookNumber(bookNumber);
+		setBookTestament(bookTestament);
 		setSourceFile(sourceFile);
 	}
 
 	/**
-	 * @return the id
+	 * @param bookName
 	 */
-	public int getId() {
-		return id;
+	public BibleBook(String bookName) {
+		super();
+		setBookName(bookName);
 	}
 
 	/**
-	 * @param id the id to set
+	 * @return the bookName
 	 */
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the title
-	 */
-	public String getTitle() {
-		return title;
+	public String geBookName() {
+		return bookName;
 	}
 
 	/**
 	 * @param title the title to set
 	 */
-	public void setTitle(String title) {
-		this.title = title;
+	public void setBookName(String bookName) {
+		this.bookName = bookName;
+	}
+
+	/**
+	 * @return the bookAbbreviation
+	 */
+	public String getBookAbbreviation() {
+		return bookAbbreviation;
+	}
+
+	/**
+	 * @param bookAbbreviation the bookAbbreviation to set
+	 */
+	public void setBookAbbreviation(String bookAbbreviation) {
+		this.bookAbbreviation = bookAbbreviation;
+	}
+
+	/**
+	 * @return the bookNumber
+	 */
+	public Integer getBookNumber() {
+		return bookNumber;
+	}
+
+	/**
+	 * @param bookNumber the bookNumber to set
+	 */
+	public void setBookNumber(Integer bookNumber) {
+		this.bookNumber = bookNumber;
+	}
+
+	/**
+	 * @return the bookTestament
+	 */
+	public String getBookTestament() {
+		return bookTestament;
+	}
+
+	/**
+	 * @param bookTestament the bookTestament to set
+	 */
+	public void setBookTestament(String bookTestament) {
+		this.bookTestament = bookTestament;
 	}
 
 	/**
@@ -68,7 +118,7 @@ public class BibleBook {
 	
 	@Override
 	public String toString() {
-		return "Book [id=" + id + ", title=" + title + ", sourceFile=" + sourceFile + "]"; 
+		return "Book [name=" + bookName + ", sourceFile=" + sourceFile + "]"; 
 	}
-
+	
 }

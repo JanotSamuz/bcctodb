@@ -54,6 +54,87 @@ public class BCCXhtml {
 		BCCbible.setTradition("Christianisme");
 		BCCbible.setChurch("Eglise catholique romaine");
 		
+		/*
+			Genese.xhtml
+			Exode.xhtml
+			Levitique.xhtml
+			Nombres.xhtml
+			Deuteronome.xhtml
+			josue.xhtml
+			juges.xhtml
+			ruth.xhtml
+			1Samuel.xhtml
+			2Samuel.xhtml
+			1Rois.xhtml
+			2Rois.xhtml
+			1Chroniques.xhtml
+			2Chroniques.xhtml
+			Esdras.xhtml
+			Nehemie.xhtml
+			Tobie.xhtml
+			Judith.xhtml
+			Esther.xhtml
+			1Machabees.xhtml
+			2Machabees.xhtml
+			Job.xhtml
+			1Psaumes.xhtml
+			2Psaumes.xhtml
+			3Psaumes.xhtml
+			4Psaumes.xhtml
+			5Psaumes.xhtml
+			Proverbes.xhtml
+			Ecclesiaste.xhtml
+			cantique_des_cantiques.xhtml
+			Sagesse.xhtml
+			Ecclesiastique.xhtml
+			Isaie.xhtml
+			Jeremie.xhtml
+			Lamentations.xhtml
+			Baruch.xhtml
+			Ezechiel.xhtml
+			Daniel.xhtml
+			Osee.xhtml
+			Joel.xhtml
+			Amos.xhtml
+			Abdias.xhtml
+			Jonas.xhtml
+			Michee.xhtml
+			Nahum.xhtml
+			Habacuc.xhtml
+			Sophonie.xhtml
+			Aggee.xhtml
+			Zacharie.xhtml
+			Malachie.xhtml
+			Matthieu.xhtml
+			Marc.xhtml
+			Luc.xhtml
+			Jean.xhtml
+			Actes.xhtml
+			Romains.xhtml
+			1Corinthiens.xhtml
+			2Corinthiens.xhtml
+			Galates.xhtml
+			Ephesiens.xhtml
+			Philippiens.xhtml
+			Colossiens.xhtml
+			1Thessaloniciens.xhtml
+			2Thessaloniciens.xhtml
+			1Timothee.xhtml
+			2Timothee.xhtml
+			Tite.xhtml
+			Philemon.xhtml
+			Hebreux.xhtml
+			Jacques.xhtml
+			1Pierre.xhtml
+			2Pierre.xhtml
+			1Jean.xhtml
+			2Jean.xhtml
+			3Jean.xhtml
+			Jude.xhtml
+			Apocalypse.xhtml
+
+		 */
+		
 	}
 
 }
