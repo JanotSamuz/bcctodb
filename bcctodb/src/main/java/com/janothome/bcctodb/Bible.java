@@ -3,8 +3,10 @@
  */
 package com.janothome.bcctodb;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Set;
+import java.util.Map.Entry;
 import java.io.Serializable;
 
 /**
@@ -26,7 +28,7 @@ public class Bible implements Serializable {
 	private String tradition;
 	private String church;
 	private String licence;
-	private Hashtable<Integer, BibleBook> hashBooks;
+	private LinkedHashMap<Integer, BibleBook> hashBooks;
 	
 	/**
 	 * @param shortName
@@ -71,7 +73,7 @@ public class Bible implements Serializable {
 	 * 
 	 */
 	private void initHashBooks() {
-		this.hashBooks = new Hashtable<Integer, BibleBook>();
+		this.hashBooks = new LinkedHashMap<Integer, BibleBook>();
 	}
 	
 	/**
@@ -203,14 +205,14 @@ public class Bible implements Serializable {
 	/**
 	 * @return the books
 	 */
-	public Hashtable<Integer, BibleBook> getBooks() {
+	public LinkedHashMap<Integer, BibleBook> getBooks() {
 		return hashBooks;
 	}
 
 	/**
 	 * @param hashBooks the books to set
 	 */
-	public void setBooks(Hashtable<Integer, BibleBook> hashBooks) {
+	public void setBooks(LinkedHashMap<Integer, BibleBook> hashBooks) {
 		this.hashBooks = hashBooks;
 	}
 	
@@ -235,10 +237,15 @@ public class Bible implements Serializable {
 	@Override
     public String toString(){
 		java.lang.StringBuilder sb = new java.lang.StringBuilder();
-		Hashtable<Integer, BibleBook> hashBooks = this.getBooks();
-		Enumeration<BibleBook> books = hashBooks.elements();
-		while (books.hasMoreElements()) {
-			BibleBook book = books.nextElement();
+		LinkedHashMap<Integer, BibleBook> hashBooks = this.getBooks();
+		// Get a set of the entries
+		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
+		// Get an iterator
+		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
+		// Display elements
+		while(itBooks.hasNext()) {
+			Entry<Integer, BibleBook> me = itBooks.next();
+			BibleBook book = (BibleBook) me.getValue();
 			sb.append(book.toString());
 		}
         return sb.toString();

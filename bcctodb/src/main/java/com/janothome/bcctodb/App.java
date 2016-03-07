@@ -15,5 +15,8 @@ public class App
     	    	
     	BCCXhtml bccXhtml = new BCCXhtml();
     	bccXhtml.Read();
+    	
+    	@SuppressWarnings("unused")
+		BCCBible bccBible = new BCCBible();
     }
 }
