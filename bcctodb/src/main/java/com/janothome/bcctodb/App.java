@@ -12,10 +12,7 @@ public class App
     	
     	//BCCEpub bccEpub = new BCCEpub();
         //bccEpub.Read();
-    	    	
-    	BCCXhtml bccXhtml = new BCCXhtml();
-    	bccXhtml.Read();
-    	
+
     	@SuppressWarnings("unused")
 		BCCBible bccBible = new BCCBible();
     }
