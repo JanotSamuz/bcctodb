@@ -15,11 +15,11 @@ public class BibleBook implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String bookName;
-	private String bookAbbreviation;
+	private String 	bookName;			// unique
+	private String 	bookAbbreviation;	// unique
     private Integer bookNumber;
-    private String bookTestament;
-    private String sourceFile;
+    private String 	bookTestament;
+    private String 	sourceFile;
 	
 	/**
 	 * @param bookName

@@ -28,6 +28,7 @@ public class Bible implements Serializable {
 	private String tradition;
 	private String church;
 	private String licence;
+	private String canon;
 	private LinkedHashMap<Integer, BibleBook> hashBooks;
 	
 	/**
@@ -203,6 +204,20 @@ public class Bible implements Serializable {
 	}
 	
 	/**
+	 * @return the canon
+	 */
+	public String getCanon() {
+		return canon;
+	}
+
+	/**
+	 * @param canon the canon to set
+	 */
+	public void setCanon(String canon) {
+		this.canon = canon;
+	}
+
+	/**
 	 * @return the books
 	 */
 	public LinkedHashMap<Integer, BibleBook> getBooks() {
@@ -219,8 +234,28 @@ public class Bible implements Serializable {
 	/**
 	 * @param newBook the book to add
 	 */
-	public void addBook(BibleBook newBook) {
-        hashBooks.put(hashBooks.size()+1, newBook);
+	public void addBook(BibleBook newBook) throws Exception {
+		LinkedHashMap<Integer, BibleBook> hashBooks = this.getBooks();
+		// Get a set of the entries
+		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
+		// Get an iterator
+		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
+		// Display elements
+		while(itBooks.hasNext()) {
+			Entry<Integer, BibleBook> me = itBooks.next();
+			BibleBook book = (BibleBook) me.getValue();
+			if ((newBook.getBookAbbreviation() == book.getBookAbbreviation()) && !newBook.getBookAbbreviation().toLowerCase().equals(new String("ps"))) {
+				throw new Exception("Book abbreviation " + newBook.getBookAbbreviation() + " already used.");
+			}
+			if ((newBook.getBookNumber() == book.getBookNumber()) && !newBook.getBookAbbreviation().toLowerCase().equals(new String("ps"))) {
+				throw new Exception("Book number " + newBook.getBookNumber() + " already used.");
+			}
+			if (newBook.geBookName() == book.geBookName()) {
+				throw new Exception("Book name " + newBook.geBookName() + " already used.");
+			}
+		}
+		
+		hashBooks.put(hashBooks.size()+1, newBook);
     }
 	
 	/**
