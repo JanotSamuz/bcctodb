@@ -245,16 +245,18 @@ public class Bible implements Serializable {
 			Entry<Integer, BibleBook> me = itBooks.next();
 			BibleBook book = (BibleBook) me.getValue();
 			if ((newBook.getBookAbbreviation() == book.getBookAbbreviation()) && !newBook.getBookAbbreviation().toLowerCase().equals(new String("ps"))) {
+				// Don't add a book with an abbreviation that already exists expect for psaume book (Ps)
 				throw new Exception("Book abbreviation " + newBook.getBookAbbreviation() + " already used.");
 			}
 			if ((newBook.getBookNumber() == book.getBookNumber()) && !newBook.getBookAbbreviation().toLowerCase().equals(new String("ps"))) {
+				// Don't add a book with a number that already exists expect for psaume book (Ps)
 				throw new Exception("Book number " + newBook.getBookNumber() + " already used.");
 			}
 			if (newBook.geBookName() == book.geBookName()) {
+				// Don't add a book with a name that already exists
 				throw new Exception("Book name " + newBook.geBookName() + " already used.");
 			}
 		}
-		
 		hashBooks.put(hashBooks.size()+1, newBook);
     }
 	

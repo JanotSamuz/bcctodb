@@ -4,6 +4,7 @@
 package com.janothome.bcctodb;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 
 /**
  * @author Janot Samuz (janotsamuz+github@gmail.com)
@@ -20,6 +21,7 @@ public class BibleBook implements Serializable {
     private Integer bookNumber;
     private String 	bookTestament;
     private String 	sourceFile;
+    private LinkedHashMap<Integer, BibleChapter> hashChapters;
 	
 	/**
 	 * @param bookName
@@ -31,11 +33,14 @@ public class BibleBook implements Serializable {
 	public BibleBook(String bookName, String bookAbbreviation, Integer bookNumber, String bookTestament,
 			String sourceFile) {
 		super();
+		
 		setBookName(bookName);
 		setBookAbbreviation(bookAbbreviation);
 		setBookNumber(bookNumber);
 		setBookTestament(bookTestament);
 		setSourceFile(sourceFile);
+		
+		initHashChapters();
 	}
 
 	/**
@@ -43,9 +48,19 @@ public class BibleBook implements Serializable {
 	 */
 	public BibleBook(String bookName) {
 		super();
+		
 		setBookName(bookName);
+		
+		initHashChapters();
 	}
 
+	/**
+	 * 
+	 */
+	private void initHashChapters() {
+		this.hashChapters = new LinkedHashMap<Integer, BibleChapter>();
+	}
+	
 	/**
 	 * @return the bookName
 	 */
@@ -114,6 +129,20 @@ public class BibleBook implements Serializable {
 	 */
 	public void setSourceFile(String sourceFile) {
 		this.sourceFile = sourceFile;
+	}
+	
+	/**
+	 * @return the chapters
+	 */
+	public LinkedHashMap<Integer, BibleChapter> getChapters() {
+		return hashChapters;
+	}
+
+	/**
+	 * @param hashChapters the chapters to set
+	 */
+	public void setChapters(LinkedHashMap<Integer, BibleChapter> hashChapters) {
+		this.hashChapters = hashChapters;
 	}
 	
 	@Override
