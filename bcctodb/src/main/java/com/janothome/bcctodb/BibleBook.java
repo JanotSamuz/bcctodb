@@ -4,7 +4,10 @@
 package com.janothome.bcctodb;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * @author Janot Samuz (janotsamuz+github@gmail.com)
@@ -21,6 +24,8 @@ public class BibleBook implements Serializable {
     private Integer bookNumber;
     private String 	bookTestament;
     private String 	sourceFile;
+    private String 	booksIntroduction;
+    private String 	bookIntroduction;
     private LinkedHashMap<Integer, BibleChapter> hashChapters;
 	
 	/**
@@ -132,6 +137,34 @@ public class BibleBook implements Serializable {
 	}
 	
 	/**
+	 * @return the bookIntroduction
+	 */
+	public String getBookIntroduction() {
+		return bookIntroduction;
+	}
+
+	/**
+	 * @return the booksIntroduction
+	 */
+	public String getBooksIntroduction() {
+		return booksIntroduction;
+	}
+
+	/**
+	 * @param booksIntroduction the booksIntroduction to set
+	 */
+	public void setBooksIntroduction(String booksIntroduction) {
+		this.booksIntroduction = booksIntroduction;
+	}
+
+	/**
+	 * @param bookIntroduction the bookIntroduction to set
+	 */
+	public void setBookIntroduction(String bookIntroduction) {
+		this.bookIntroduction = bookIntroduction;
+	}
+	
+	/**
 	 * @return the chapters
 	 */
 	public LinkedHashMap<Integer, BibleChapter> getChapters() {
@@ -147,7 +180,21 @@ public class BibleBook implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "Book [name=" + bookName + ", sourceFile=" + sourceFile + "]"; 
+		java.lang.StringBuilder sb = new java.lang.StringBuilder();
+		LinkedHashMap<Integer, BibleChapter> hashChapters = this.getChapters();
+		// Get a set of the entries
+		Set<Entry<Integer, BibleChapter>> mapChapters = hashChapters.entrySet();
+		// Get an iterator
+		Iterator<Entry<Integer, BibleChapter>> itChapters = mapChapters.iterator();
+		// Display elements
+		while(itChapters.hasNext()) {
+			Entry<Integer, BibleChapter> me = itChapters.next();
+			BibleChapter chapter = (BibleChapter) me.getValue();
+			sb.append(this.getBooksIntroduction());
+			sb.append(this.getBookIntroduction());
+			sb.append(chapter.toString());
+		}
+        return sb.toString(); 
 	}
 	
 }

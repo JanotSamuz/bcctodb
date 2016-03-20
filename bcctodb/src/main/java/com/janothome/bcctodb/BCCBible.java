@@ -3,19 +3,6 @@
  */
 package com.janothome.bcctodb;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
-
-import org.apache.commons.io.IOUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
-import java.util.Set;
-
 /**
  * @author Janot Samuz (janotsamuz+github@gmail.com)
  *
@@ -125,38 +112,6 @@ public final class BCCBible extends Bible {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
-		LinkedHashMap<Integer, BibleBook> hashBooks = this.getBooks();
-		// Get a set of the entries
-		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
-		// Get an iterator
-		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
-		// Display elements
-		while(itBooks.hasNext()) {
-			Entry<Integer, BibleBook> me = itBooks.next();
-			Integer bookKey = (Integer) me.getKey();
-			BibleBook book = (BibleBook) me.getValue();
-			String xhtmlText = new String();
-			ClassLoader classLoader = getClass().getClassLoader();
-			try {
-				xhtmlText = IOUtils.toString((InputStream) classLoader.getResource("xhtml/"+book.getSourceFile()).getContent(), "UTF-8");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			Document doc = Jsoup.parse(xhtmlText);
-			//Elements elements = doc.select("body").first().children();
-			//for (Element el : elements)
-			//Element el = elements.first();
-			Element el = doc.select("h2").last();
-			String titleBookFromXhtml = new String();
-			if (el == null) {
-				titleBookFromXhtml = "Erreur";
-			} else {
-				titleBookFromXhtml = el.text();
-			}
-			System.out.println(bookKey.toString() + "|" + book.geBookName() + "|" + titleBookFromXhtml);
-		}	
 		
 	}
 
