@@ -23,7 +23,7 @@ import junit.framework.TestCase;
  */
 public class TestBCCBooks extends TestCase {
 
-	private BCCBible bccBible = new BCCBible();
+	private BCCBible bccBible;
 	
 	/**
 	 * @param name
@@ -37,6 +37,7 @@ public class TestBCCBooks extends TestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
+		this.bccBible = new BCCBible();
 	}
 
 	/* (non-Javadoc)
@@ -52,7 +53,7 @@ public class TestBCCBooks extends TestCase {
 		assertTrue(hashBooks.size() == 77);
     }
 	
-	public void testBCCBooksOrder()
+	public void testBCCBooksKeysOrder()
     {
 		LinkedHashMap<Integer, BibleBook> hashBooks = bccBible.getBooks();
 		// Get a set of the entries

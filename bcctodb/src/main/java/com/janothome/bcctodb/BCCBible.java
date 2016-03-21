@@ -3,6 +3,18 @@
  */
 package com.janothome.bcctodb;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Set;
+import java.util.Map.Entry;
+
+import org.apache.commons.io.IOUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 /**
  * @author Janot Samuz (janotsamuz+github@gmail.com)
  *
@@ -15,9 +27,10 @@ public final class BCCBible extends Bible {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * @throws Exception 
 	 * 
 	 */
-	public BCCBible() {
+	public BCCBible() throws Exception {
 		super("Bible Chanoine Crampon");
 		
 		this.setVersion("1.0");
@@ -111,6 +124,42 @@ public final class BCCBible extends Bible {
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		}
+		
+		LinkedHashMap<Integer, BibleBook> hashBooks = this.getBooks();
+		// Get a set of the entries
+		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
+		// Get an iterator
+		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
+		// Display elements
+		while(itBooks.hasNext()) {
+			Entry<Integer, BibleBook> me = itBooks.next();
+			//Integer bookKey = (Integer) me.getKey();
+			BibleBook book = (BibleBook) me.getValue();
+			String xhtmlText = new String();
+			ClassLoader classLoader = getClass().getClassLoader();
+			try {
+				xhtmlText = IOUtils.toString((InputStream) classLoader.getResource("xhtml/"+book.getSourceFile()).getContent(), "UTF-8");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Document doc = Jsoup.parse(xhtmlText);
+			//Elements elements = doc.select("body").first().children();
+			//for (Element el : elements)
+			//Element el = elements.first();
+			Element firstElementH2 = doc.select("h2").first();
+			Element lastElementH2 = doc.select("h2").last();
+			Element firstElementH3 = doc.select("h3").first();
+			if (firstElementH2 == null || lastElementH2 == null) {
+				throw new Exception("Unexpected error when reading XTHML file for book name : " + book.geBookName());
+			} else if (!firstElementH2.text().equals(lastElementH2.text())) {
+				// Books introduction
+				System.out.println("Book : " + book.geBookName());
+				// TODO : See sibling elements : http://stackoverflow.com/questions/6534456/jsoup-how-to-get-all-html-between-2-header-tags
+				System.out.println("Books introduction : " + firstElementH2.outerHtml() + lastElementH2.firstElementSibling());
+				System.out.println("Book intruction : " + lastElementH2.outerHtml() + firstElementH3.before(lastElementH2).html());
+			}
 		}
 		
 	}

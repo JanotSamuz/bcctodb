@@ -9,7 +9,9 @@ package com.janothome.bcctodb;
  */
 public class BibleChapter {
 
-	private String chapterContent;
+	private String  chaptersIntroduction;
+    private String  chapterIntroduction;
+	private String  chapterContent;
 	
 	/**
 	 * 
@@ -35,6 +37,34 @@ public class BibleChapter {
 	@Override
 	public String toString() {
         return this.getChapterContent(); 
+	}
+
+	/**
+	 * @return the chaptersIntroduction
+	 */
+	public String getChaptersIntroduction() {
+		return chaptersIntroduction;
+	}
+
+	/**
+	 * @param chaptersIntroduction the chaptersIntroduction to set
+	 */
+	public void setChaptersIntroduction(String chaptersIntroduction) {
+		this.chaptersIntroduction = chaptersIntroduction;
+	}
+
+	/**
+	 * @return the chapterIntroduction
+	 */
+	public String getChapterIntroduction() {
+		return chapterIntroduction;
+	}
+
+	/**
+	 * @param chapterIntroduction the chapterIntroduction to set
+	 */
+	public void setChapterIntroduction(String chapterIntroduction) {
+		this.chapterIntroduction = chapterIntroduction;
 	}
 	
 }
