@@ -5,8 +5,10 @@ package com.janothome.bcctodb;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -14,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  * @author Janot Samuz (janotsamuz+github@gmail.com)
@@ -145,9 +148,32 @@ public final class BCCBible extends Bible {
 				e.printStackTrace();
 			}
 			Document doc = Jsoup.parse(xhtmlText);
-			//Elements elements = doc.select("body").first().children();
-			//for (Element el : elements)
-			//Element el = elements.first();
+			
+			String titleTag = "h2";
+			java.lang.StringBuilder sbBooksIntroduction = new java.lang.StringBuilder();
+			if (book.geBookName() == "Psaumes - Livre Premier (1-41)") {
+				Element firstTitle = doc.select(titleTag).first();
+				Element lastTitle = doc.select(titleTag).last();
+				if (firstTitle == null || lastTitle == null) {
+					throw new Exception("Unexpected error when reading XTHML file for book name : " + book.geBookName());
+				} else if (!firstTitle.text().equals(lastTitle.text())) {
+					// Books introduction
+					sbBooksIntroduction.append(firstTitle.outerHtml());
+					Elements siblings = firstTitle.siblingElements();
+					List<Element> elementsBetween = new ArrayList<Element>();
+					for (int i = 0; i < siblings.size(); i++) {
+						Element sibling = siblings.get(i);
+						if (! titleTag.equals(sibling.tagName()))
+							elementsBetween.add(sibling);
+						else {
+							processElementsBetween(elementsBetween, sbBooksIntroduction);
+							elementsBetween.clear();
+						}
+					}
+					book.setBooksIntroduction(sbBooksIntroduction.toString());
+				}
+			}
+			/*
 			Element firstElementH2 = doc.select("h2").first();
 			Element lastElementH2 = doc.select("h2").last();
 			Element firstElementH3 = doc.select("h3").first();
@@ -160,8 +186,15 @@ public final class BCCBible extends Bible {
 				System.out.println("Books introduction : " + firstElementH2.outerHtml() + lastElementH2.firstElementSibling());
 				System.out.println("Book intruction : " + lastElementH2.outerHtml() + firstElementH3.before(lastElementH2).html());
 			}
+			*/
 		}
 		
+	}
+	
+	private static void processElementsBetween(List<Element> elementsBetween, java.lang.StringBuilder sb) {
+		for (Element element : elementsBetween) {
+			sb.append(element.toString());
+		}
 	}
 
 }
