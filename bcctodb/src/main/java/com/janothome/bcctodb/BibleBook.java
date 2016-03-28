@@ -21,6 +21,7 @@ public class BibleBook implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String 	bookName;			// unique
 	private String 	bookAbbreviation;	// unique
+	private Integer	bookKey;			// unique
     private Integer bookNumber;
     private String 	bookTestament;
     private String 	sourceFile;
@@ -94,6 +95,20 @@ public class BibleBook implements Serializable {
 		this.bookAbbreviation = bookAbbreviation;
 	}
 
+	/**
+	 * @return the bookKey
+	 */
+	public Integer getBookKey() {
+		return bookKey;
+	}
+
+	/**
+	 * @param bookKey the bookKey to set
+	 */
+	public void setBookKey(Integer bookKey) {
+		this.bookKey = bookKey;
+	}
+	
 	/**
 	 * @return the bookNumber
 	 */

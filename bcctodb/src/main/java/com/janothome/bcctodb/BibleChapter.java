@@ -9,6 +9,9 @@ package com.janothome.bcctodb;
  */
 public class BibleChapter {
 
+	private String 	chapterName;			// unique
+	private Integer	chapterKey;				// unique
+    private Integer chapterNumber;			// unique
 	private String  chaptersIntroduction;
     private String  chapterIntroduction;
 	private String  chapterContent;
@@ -65,6 +68,48 @@ public class BibleChapter {
 	 */
 	public void setChapterIntroduction(String chapterIntroduction) {
 		this.chapterIntroduction = chapterIntroduction;
+	}
+
+	/**
+	 * @return the chapterName
+	 */
+	public String getChapterName() {
+		return chapterName;
+	}
+
+	/**
+	 * @param chapterName the chapterName to set
+	 */
+	public void setChapterName(String chapterName) {
+		this.chapterName = chapterName;
+	}
+
+	/**
+	 * @return the chapterKey
+	 */
+	public Integer getChapterKey() {
+		return chapterKey;
+	}
+
+	/**
+	 * @param chapterKey the chapterKey to set
+	 */
+	public void setChapterKey(Integer chapterKey) {
+		this.chapterKey = chapterKey;
+	}
+
+	/**
+	 * @return the chapterNumber
+	 */
+	public Integer getChapterNumber() {
+		return chapterNumber;
+	}
+
+	/**
+	 * @param chapterNumber the chapterNumber to set
+	 */
+	public void setChapterNumber(Integer chapterNumber) {
+		this.chapterNumber = chapterNumber;
 	}
 	
 }

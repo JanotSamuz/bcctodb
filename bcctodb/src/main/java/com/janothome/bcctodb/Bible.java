@@ -235,6 +235,8 @@ public class Bible implements Serializable {
 	 * @param newBook the book to add
 	 */
 	public void addBook(BibleBook newBook) throws Exception {
+		Integer newBookKey = hashBooks.size()+1;
+		
 		LinkedHashMap<Integer, BibleBook> hashBooks = this.getBooks();
 		// Get a set of the entries
 		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
@@ -256,8 +258,13 @@ public class Bible implements Serializable {
 				// Don't add a book with a name that already exists
 				throw new Exception("Book name " + newBook.geBookName() + " already used.");
 			}
+			if (newBookKey == book.getBookKey()) {
+				// Don't add a book with a key that already exists
+				throw new Exception("Book key " + newBook.getBookKey() + " already used.");
+			}
 		}
-		hashBooks.put(hashBooks.size()+1, newBook);
+		newBook.setBookKey(newBookKey);
+		hashBooks.put(newBookKey, newBook);
     }
 	
 	/**

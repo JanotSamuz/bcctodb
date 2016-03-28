@@ -65,8 +65,9 @@ public class TestBCCBooks extends TestCase {
 		while(itBooks.hasNext()) {
 			Entry<Integer, BibleBook> me = itBooks.next();
 			Integer bookKey = (Integer) me.getKey();
+			BibleBook book = (BibleBook) me.getValue();
 			indice++;
-			if (bookKey != indice) {
+			if (bookKey != indice || book.getBookKey() != indice) {
 				assertTrue(false);
 			}
 		}

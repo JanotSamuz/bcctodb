@@ -144,56 +144,140 @@ public final class BCCBible extends Bible {
 			try {
 				xhtmlText = IOUtils.toString((InputStream) classLoader.getResource("xhtml/"+book.getSourceFile()).getContent(), "UTF-8");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new Exception("Unexpected error when reading XTHML file on book <" + book.geBookName() + "> ");
 			}
 			Document doc = Jsoup.parse(xhtmlText);
 			
-			String titleTag = "h2";
+			// Fill books introduction
+			this.initBooksIntroduction(doc, book);
+			
+			
+			// Fill book introduction
+			this.initBookIntroduction(doc, book);
+			
+			// Fill chapters
+			//this.initChapters(doc, book);
+		}
+	}
+	
+	private void initBooksIntroduction(Document doc, BibleBook book) throws Exception {
+		String bookTag = "h2";
+		Element firstTitle = doc.select(bookTag).first();
+		Element lastTitle = doc.select(bookTag).last();
+		if (firstTitle == null || lastTitle == null) {
+			throw new Exception("Unexpected error when reading XTHML file for books introduction on book <" + book.geBookName() + ">");
+		} else if (!firstTitle.text().equals(lastTitle.text())) {
+			// H2 présent 2 fois : Titre de l'ensemble des livres + Titre du livre
 			java.lang.StringBuilder sbBooksIntroduction = new java.lang.StringBuilder();
-			if (book.geBookName() == "Psaumes - Livre Premier (1-41)") {
-				Element firstTitle = doc.select(titleTag).first();
-				Element lastTitle = doc.select(titleTag).last();
-				if (firstTitle == null || lastTitle == null) {
-					throw new Exception("Unexpected error when reading XTHML file for book name : " + book.geBookName());
-				} else if (!firstTitle.text().equals(lastTitle.text())) {
-					// Books introduction
-					sbBooksIntroduction.append(firstTitle.outerHtml());
-					Elements siblings = firstTitle.siblingElements();
-					List<Element> elementsBetween = new ArrayList<Element>();
-					for (int i = 0; i < siblings.size(); i++) {
-						Element sibling = siblings.get(i);
-						if (! titleTag.equals(sibling.tagName()))
-							elementsBetween.add(sibling);
-						else {
-							processElementsBetween(elementsBetween, sbBooksIntroduction);
-							elementsBetween.clear();
-						}
-					}
-					book.setBooksIntroduction(sbBooksIntroduction.toString());
+			sbBooksIntroduction.append(firstTitle.outerHtml());
+			sbBooksIntroduction.append(System.getProperty("line.separator"));
+			Elements siblings = firstTitle.siblingElements();
+			List<Element> elementsBetween = new ArrayList<Element>();
+			for (int i = 0; i < siblings.size(); i++) {
+				Element sibling = siblings.get(i);
+				if (! bookTag.equals(sibling.tagName()))
+					elementsBetween.add(sibling);
+				else {
+					processElementsBetween(elementsBetween, sbBooksIntroduction);
+					elementsBetween.clear();
+					break;
 				}
 			}
-			/*
-			Element firstElementH2 = doc.select("h2").first();
-			Element lastElementH2 = doc.select("h2").last();
-			Element firstElementH3 = doc.select("h3").first();
-			if (firstElementH2 == null || lastElementH2 == null) {
-				throw new Exception("Unexpected error when reading XTHML file for book name : " + book.geBookName());
-			} else if (!firstElementH2.text().equals(lastElementH2.text())) {
-				// Books introduction
-				System.out.println("Book : " + book.geBookName());
-				// TODO : See sibling elements : http://stackoverflow.com/questions/6534456/jsoup-how-to-get-all-html-between-2-header-tags
-				System.out.println("Books introduction : " + firstElementH2.outerHtml() + lastElementH2.firstElementSibling());
-				System.out.println("Book intruction : " + lastElementH2.outerHtml() + firstElementH3.before(lastElementH2).html());
-			}
-			*/
+			book.setBooksIntroduction(sbBooksIntroduction.toString());
 		}
-		
+	}
+	
+	private void initBookIntroduction(Document doc, BibleBook book) throws Exception {
+		String bookTagLast = "h2";
+		String chapterTagFirst = "h3";
+		java.lang.StringBuilder sbBookIntroduction = new java.lang.StringBuilder();
+		Element lastBookTitle = doc.select(bookTagLast).last();
+		if (lastBookTitle == null ) {
+			throw new Exception("Unexpected error when reading XTHML file for book introduction on book <" + book.geBookName() + ">");
+		}
+		sbBookIntroduction.append(lastBookTitle.outerHtml());
+		sbBookIntroduction.append(System.getProperty("line.separator"));
+		Element firstChapterTitle = doc.select(chapterTagFirst).first();
+		if ((lastBookTitle != null) && (firstChapterTitle != null)) {
+			// H2 et H3 présents : Titre du livre + Titre du chapitre
+			Elements siblings = doc.getElementsByIndexGreaterThan(lastBookTitle.elementSiblingIndex());
+			List<Element> elementsBetween = new ArrayList<Element>();
+			for (int i = 0; i < siblings.size(); i++) {
+				Element sibling = siblings.get(i);
+				if (! chapterTagFirst.equals(sibling.tagName()))
+					elementsBetween.add(sibling);
+				else {
+					processElementsBetween(elementsBetween, sbBookIntroduction);
+					elementsBetween.clear();
+					break;
+				}
+			}
+		} else if ((lastBookTitle != null) && (firstChapterTitle == null)) {
+			// H2 seulement présent : Titre du livre seulement
+			Elements siblings = lastBookTitle.siblingElements();
+			List<Element> elementsBetween = new ArrayList<Element>();
+			for (int i = 0; i < siblings.size(); i++) {
+				Element sibling = siblings.get(i);
+				if (! sibling.html().startsWith("<br> 1 "))
+					elementsBetween.add(sibling);
+				else {
+					processElementsBetween(elementsBetween, sbBookIntroduction);
+					elementsBetween.clear();
+					break;
+				}
+			}
+		}
+		book.setBookIntroduction(sbBookIntroduction.toString());
+	}
+	
+	private void initChapters(Document doc, BibleBook book) throws Exception {
+		String bookTagLast = "h2";
+		String chapterTagFirst = "h3";
+		java.lang.StringBuilder sbChapterContent = new java.lang.StringBuilder();
+		Element lastBookTitle = doc.select(bookTagLast).last();
+		if (lastBookTitle == null ) {
+			throw new Exception("Unexpected error when reading XTHML file for book introduction on book <" + book.geBookName() + ">");
+		}
+		sbChapterContent.append(lastBookTitle.outerHtml());
+		sbChapterContent.append(System.getProperty("line.separator"));
+		Element firstChapterTitle = doc.select(chapterTagFirst).first();
+		if ((lastBookTitle != null) && (firstChapterTitle != null)) {
+			// H2 et H3 présents : Titre du livre + Titre du chapitre
+			Elements siblings = doc.getElementsByIndexGreaterThan(lastBookTitle.elementSiblingIndex());
+			List<Element> elementsBetween = new ArrayList<Element>();
+			for (int i = 0; i < siblings.size(); i++) {
+				Element sibling = siblings.get(i);
+				if (! chapterTagFirst.equals(sibling.tagName()))
+					elementsBetween.add(sibling);
+				else {
+					processElementsBetween(elementsBetween, sbChapterContent);
+					elementsBetween.clear();
+					break;
+				}
+			}
+		} else if ((lastBookTitle != null) && (firstChapterTitle == null)) {
+			// H2 seulement présent : Titre du livre seulement
+			// 1 seul chapitre à ajouter
+			Elements siblings = lastBookTitle.siblingElements();
+			List<Element> elementsBetween = new ArrayList<Element>();
+			boolean bFound = false;
+			for (int i = 0; i < siblings.size(); i++) {
+				Element sibling = siblings.get(i);
+				if (sibling.html().startsWith("<br> 1 ") || bFound) {
+					elementsBetween.add(sibling);
+					bFound = true;
+				}	
+			}
+			processElementsBetween(elementsBetween, sbChapterContent);
+			elementsBetween.clear();
+		}
+		//book.setBookIntroduction(sbChapterContent.toString());
 	}
 	
 	private static void processElementsBetween(List<Element> elementsBetween, java.lang.StringBuilder sb) {
 		for (Element element : elementsBetween) {
 			sb.append(element.toString());
+			sb.append(System.getProperty("line.separator"));
 		}
 	}
 
