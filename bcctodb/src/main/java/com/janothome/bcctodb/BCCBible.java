@@ -156,7 +156,7 @@ public final class BCCBible extends Bible {
 			this.initBookIntroduction(doc, book);
 			
 			// Fill chapters
-			//this.initChapters(doc, book);
+			this.initChapters(doc, book);
 		}
 	}
 	
@@ -230,6 +230,7 @@ public final class BCCBible extends Bible {
 		book.setBookIntroduction(sbBookIntroduction.toString());
 	}
 	
+	// TODO Development in progress...
 	private void initChapters(Document doc, BibleBook book) throws Exception {
 		String bookTagLast = "h2";
 		String chapterTagFirst = "h3";

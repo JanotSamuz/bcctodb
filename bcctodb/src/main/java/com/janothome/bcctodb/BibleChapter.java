@@ -12,7 +12,6 @@ public class BibleChapter {
 	private String 	chapterName;			// unique
 	private Integer	chapterKey;				// unique
     private Integer chapterNumber;			// unique
-	private String  chaptersIntroduction;
     private String  chapterIntroduction;
 	private String  chapterContent;
 	
@@ -35,25 +34,6 @@ public class BibleChapter {
 	 */
 	public void setChapterContent(String chapterContent) {
 		this.chapterContent = chapterContent;
-	}
-
-	@Override
-	public String toString() {
-        return this.getChapterContent(); 
-	}
-
-	/**
-	 * @return the chaptersIntroduction
-	 */
-	public String getChaptersIntroduction() {
-		return chaptersIntroduction;
-	}
-
-	/**
-	 * @param chaptersIntroduction the chaptersIntroduction to set
-	 */
-	public void setChaptersIntroduction(String chaptersIntroduction) {
-		this.chaptersIntroduction = chaptersIntroduction;
 	}
 
 	/**
@@ -110,6 +90,11 @@ public class BibleChapter {
 	 */
 	public void setChapterNumber(Integer chapterNumber) {
 		this.chapterNumber = chapterNumber;
+	}
+
+	@Override
+	public String toString() {
+        return this.getChapterContent(); 
 	}
 	
 }
