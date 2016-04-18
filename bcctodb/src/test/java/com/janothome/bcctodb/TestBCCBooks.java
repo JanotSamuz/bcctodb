@@ -91,13 +91,10 @@ public class TestBCCBooks extends TestCase {
 			try {
 				xhtmlText = IOUtils.toString((InputStream) classLoader.getResource("xhtml/"+book.getSourceFile()).getContent(), "UTF-8");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				assertTrue(false);
 			}
 			Document doc = Jsoup.parse(xhtmlText);
-			//Elements elements = doc.select("body").first().children();
-			//for (Element el : elements)
-			//Element el = elements.first();
 			Element el = doc.select("h2").last();
 			String titleBookFromXhtml = new String();
 			if (el == null) {

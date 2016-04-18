@@ -232,47 +232,38 @@ public final class BCCBible extends Bible {
 	
 	// TODO Development in progress...
 	private void initChapters(Document doc, BibleBook book) throws Exception {
-		String bookTagLast = "h2";
-		String chapterTagFirst = "h3";
-		java.lang.StringBuilder sbChapterContent = new java.lang.StringBuilder();
-		Element lastBookTitle = doc.select(bookTagLast).last();
-		if (lastBookTitle == null ) {
-			throw new Exception("Unexpected error when reading XTHML file for book introduction on book <" + book.geBookName() + ">");
-		}
-		sbChapterContent.append(lastBookTitle.outerHtml());
-		sbChapterContent.append(System.getProperty("line.separator"));
-		Element firstChapterTitle = doc.select(chapterTagFirst).first();
-		if ((lastBookTitle != null) && (firstChapterTitle != null)) {
-			// H2 et H3 présents : Titre du livre + Titre du chapitre
-			Elements siblings = doc.getElementsByIndexGreaterThan(lastBookTitle.elementSiblingIndex());
+		String chapterText = "chapitre";
+		String psaumeText = "psaume";
+		String chapterTag = "h3";
+		Element firstChapterTag = doc.select(chapterTag).first();
+		Element secondChapterTag = doc.select(chapterTag).eq(1).first();
+		if (firstChapterTag == null || secondChapterTag == null) {
+			throw new Exception("Unexpected error when reading XTHML file for books introduction on book <" + book.geBookName() + ">");
+		} else if ( (      (!firstChapterTag.text().toLowerCase().startsWith(chapterText))
+				        && (secondChapterTag.text().toLowerCase().startsWith(chapterText))
+					) ||
+					(      (!firstChapterTag.text().toLowerCase().startsWith(psaumeText))
+					        && (secondChapterTag.text().toLowerCase().startsWith(psaumeText))
+					)
+				  ) {
+			// H3 présent au moins 2 fois : présence d'aux moins 2 chapitres avec une introduction
+			java.lang.StringBuilder sbChaptersIntroduction = new java.lang.StringBuilder();
+			sbChaptersIntroduction.append(firstChapterTag.outerHtml());
+			sbChaptersIntroduction.append(System.getProperty("line.separator"));
+			Elements siblings = firstChapterTag.siblingElements();
 			List<Element> elementsBetween = new ArrayList<Element>();
 			for (int i = 0; i < siblings.size(); i++) {
 				Element sibling = siblings.get(i);
-				if (! chapterTagFirst.equals(sibling.tagName()))
+				if (! chapterTag.equals(sibling.tagName()))
 					elementsBetween.add(sibling);
 				else {
-					processElementsBetween(elementsBetween, sbChapterContent);
+					processElementsBetween(elementsBetween, sbChaptersIntroduction);
 					elementsBetween.clear();
 					break;
 				}
 			}
-		} else if ((lastBookTitle != null) && (firstChapterTitle == null)) {
-			// H2 seulement présent : Titre du livre seulement
-			// 1 seul chapitre à ajouter
-			Elements siblings = lastBookTitle.siblingElements();
-			List<Element> elementsBetween = new ArrayList<Element>();
-			boolean bFound = false;
-			for (int i = 0; i < siblings.size(); i++) {
-				Element sibling = siblings.get(i);
-				if (sibling.html().startsWith("<br> 1 ") || bFound) {
-					elementsBetween.add(sibling);
-					bFound = true;
-				}	
-			}
-			processElementsBetween(elementsBetween, sbChapterContent);
-			elementsBetween.clear();
+			//book.setBooksIntroduction(sbBooksIntroduction.toString());
 		}
-		//book.setBookIntroduction(sbChapterContent.toString());
 	}
 	
 	private static void processElementsBetween(List<Element> elementsBetween, java.lang.StringBuilder sb) {
