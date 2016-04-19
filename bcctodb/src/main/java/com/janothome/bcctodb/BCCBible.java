@@ -39,12 +39,47 @@ public final class BCCBible extends Bible {
 		this.setVersion("1.0");
 		this.setLongName("La Saint Bible d'après les textes originaux par l'abbé Augustin Crampon, chanoine d'Amiens - Edition 1923");
 		this.setDigitalization("Edition numérique/relecture et vérifications par Jean-Marie WEBER pour www.mission-web.com");
-		this.setEdition("Edition réisée par les Pères de la Cie de Jésus avec la collaboration de Professeurs de S. Sulpice - SOCIÉTÉ DE S. JEAN L'ÉVANGÉLISTE - 1923");
+		this.setEdition("Edition révisée par les Pères de la Cie de Jésus avec la collaboration de Professeurs de S. Sulpice - SOCIÉTÉ DE S. JEAN L'ÉVANGÉLISTE - 1923");
 		this.setLicence("Cette oeuvre est mise à disposition selon les termes de la Licence Creative Commons Attribution - Pas d'Utilisation Commerciale - Partage dans les Mêmes Conditions 3.0 non transposé.");
 		this.setTradition("Christianisme");
 		this.setChurch("Eglise catholique romaine");
 		this.setCanon("Canon catholique");
 		
+		this.initBooks_Definition();
+		
+		LinkedHashMap<Integer, BibleBook> hashBooks = this.getBooks();
+		// Get a set of the entries
+		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
+		// Get an iterator
+		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
+		// Display elements
+		while(itBooks.hasNext()) {
+			Entry<Integer, BibleBook> me = itBooks.next();
+			//Integer bookKey = (Integer) me.getKey();
+			BibleBook book = (BibleBook) me.getValue();
+			String xhtmlText = new String();
+			ClassLoader classLoader = getClass().getClassLoader();
+			try {
+				xhtmlText = IOUtils.toString((InputStream) classLoader.getResource("xhtml/"+book.getSourceFile()).getContent(), "UTF-8");
+			} catch (IOException e) {
+				throw new Exception("Unexpected error when reading XTHML file on book <" + book.getBookName() + "> ");
+			}
+			Document doc = Jsoup.parse(xhtmlText);
+			
+			// Fill global books introduction
+			this.initBook_GlobalBooksIntroduction(doc, book);
+			
+			
+			// Fill book introduction
+			this.initBook_BookIntroduction(doc, book);
+			
+			// Fill chapters content
+			this.initBook_ChaptersContent(doc, book);
+			
+		}
+	}
+	
+	private void initBooks_Definition() throws Exception {
 		// Insertion des livres dans l'ordre
 		try {
 			this.addBook(new BibleBook("Genèse","Gn",1,"Ancien Testament","Genese.xhtml"));
@@ -128,44 +163,14 @@ public final class BCCBible extends Bible {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
-		LinkedHashMap<Integer, BibleBook> hashBooks = this.getBooks();
-		// Get a set of the entries
-		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
-		// Get an iterator
-		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
-		// Display elements
-		while(itBooks.hasNext()) {
-			Entry<Integer, BibleBook> me = itBooks.next();
-			//Integer bookKey = (Integer) me.getKey();
-			BibleBook book = (BibleBook) me.getValue();
-			String xhtmlText = new String();
-			ClassLoader classLoader = getClass().getClassLoader();
-			try {
-				xhtmlText = IOUtils.toString((InputStream) classLoader.getResource("xhtml/"+book.getSourceFile()).getContent(), "UTF-8");
-			} catch (IOException e) {
-				throw new Exception("Unexpected error when reading XTHML file on book <" + book.geBookName() + "> ");
-			}
-			Document doc = Jsoup.parse(xhtmlText);
-			
-			// Fill books introduction
-			this.initBooksIntroduction(doc, book);
-			
-			
-			// Fill book introduction
-			this.initBookIntroduction(doc, book);
-			
-			// Fill chapters
-			this.initChapters(doc, book);
-		}
 	}
 	
-	private void initBooksIntroduction(Document doc, BibleBook book) throws Exception {
+	private void initBook_GlobalBooksIntroduction(Document doc, BibleBook book) throws Exception {
 		String bookTag = "h2";
 		Element firstTitle = doc.select(bookTag).first();
 		Element lastTitle = doc.select(bookTag).last();
 		if (firstTitle == null || lastTitle == null) {
-			throw new Exception("Unexpected error when reading XTHML file for books introduction on book <" + book.geBookName() + ">");
+			throw new Exception("Unexpected error when reading XTHML file for books introduction on book <" + book.getBookName() + ">");
 		} else if (!firstTitle.text().equals(lastTitle.text())) {
 			// H2 présent 2 fois : Titre de l'ensemble des livres + Titre du livre
 			java.lang.StringBuilder sbBooksIntroduction = new java.lang.StringBuilder();
@@ -187,13 +192,13 @@ public final class BCCBible extends Bible {
 		}
 	}
 	
-	private void initBookIntroduction(Document doc, BibleBook book) throws Exception {
+	private void initBook_BookIntroduction(Document doc, BibleBook book) throws Exception {
 		String bookTagLast = "h2";
 		String chapterTagFirst = "h3";
 		java.lang.StringBuilder sbBookIntroduction = new java.lang.StringBuilder();
 		Element lastBookTitle = doc.select(bookTagLast).last();
 		if (lastBookTitle == null ) {
-			throw new Exception("Unexpected error when reading XTHML file for book introduction on book <" + book.geBookName() + ">");
+			throw new Exception("Unexpected error when reading XTHML file for book introduction on book <" + book.getBookName() + ">");
 		}
 		sbBookIntroduction.append(lastBookTitle.outerHtml());
 		sbBookIntroduction.append(System.getProperty("line.separator"));
@@ -231,14 +236,23 @@ public final class BCCBible extends Bible {
 	}
 	
 	// TODO Development in progress...
-	private void initChapters(Document doc, BibleBook book) throws Exception {
+	private void initBook_ChaptersContent(Document doc, BibleBook book) throws Exception {
+		String bookTitleTag = "h2";
 		String chapterText = "chapitre";
 		String psaumeText = "psaume";
 		String chapterTag = "h3";
 		Element firstChapterTag = doc.select(chapterTag).first();
 		Element secondChapterTag = doc.select(chapterTag).eq(1).first();
-		if (firstChapterTag == null || secondChapterTag == null) {
-			throw new Exception("Unexpected error when reading XTHML file for books introduction on book <" + book.geBookName() + ">");
+		Element firstBookTag = doc.select(bookTitleTag).first();
+		if (firstChapterTag == null) {
+			// Il n'y a qu'un seul chapitre non nommé (pas de tag H3)
+			// Le contenu du chapitre sera alors tout le texte après le tag H2 du titre du livre  
+			Element firstChapterElement = firstBookTag.lastElementSibling();
+			BibleChapter uniqueChapter = new BibleChapter("", 1);
+			uniqueChapter.setChapterContent(firstChapterElement.html());
+			book.addChapter(uniqueChapter);
+		} else if (secondChapterTag == null) {
+			throw new Exception("Unexpected error when reading XTHML file for books introduction on book <" + book.getBookName() + ">");
 		} else if ( (      (!firstChapterTag.text().toLowerCase().startsWith(chapterText))
 				        && (secondChapterTag.text().toLowerCase().startsWith(chapterText))
 					) ||
@@ -246,7 +260,7 @@ public final class BCCBible extends Bible {
 					        && (secondChapterTag.text().toLowerCase().startsWith(psaumeText))
 					)
 				  ) {
-			// H3 présent au moins 2 fois : présence d'aux moins 2 chapitres avec une introduction
+			// Tag H3 présent au moins 2 fois : présence d'aux moins 2 chapitres avec une introduction
 			java.lang.StringBuilder sbChaptersIntroduction = new java.lang.StringBuilder();
 			sbChaptersIntroduction.append(firstChapterTag.outerHtml());
 			sbChaptersIntroduction.append(System.getProperty("line.separator"));
@@ -262,7 +276,13 @@ public final class BCCBible extends Bible {
 					break;
 				}
 			}
-			//book.setBooksIntroduction(sbBooksIntroduction.toString());
+			
+			//Elements chapters = doc.select(chapterTag);
+			//for (Element chapter : chapters) {
+				
+			//}
+			
+			//chapter.setChapterIntroduction(sbChaptersIntroduction.toString());
 		}
 	}
 	

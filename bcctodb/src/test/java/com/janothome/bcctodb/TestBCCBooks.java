@@ -102,7 +102,7 @@ public class TestBCCBooks extends TestCase {
 			} else {
 				titleBookFromXhtml = el.text();
 			}
-			if (!book.geBookName().equals(titleBookFromXhtml)) {
+			if (!book.getBookName().equals(titleBookFromXhtml)) {
 				assertTrue(false);
 			}
 		}

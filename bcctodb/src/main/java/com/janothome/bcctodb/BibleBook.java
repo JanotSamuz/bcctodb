@@ -25,7 +25,7 @@ public class BibleBook implements Serializable {
     private Integer bookNumber;
     private String 	bookTestament;
     private String 	sourceFile;
-    private String 	booksIntroduction;
+    private String 	globalBooksIntroduction;
     private String 	bookIntroduction;
     private LinkedHashMap<Integer, BibleChapter> hashChapters;
 	
@@ -70,7 +70,7 @@ public class BibleBook implements Serializable {
 	/**
 	 * @return the bookName
 	 */
-	public String geBookName() {
+	public String getBookName() {
 		return bookName;
 	}
 
@@ -162,14 +162,14 @@ public class BibleBook implements Serializable {
 	 * @return the booksIntroduction
 	 */
 	public String getBooksIntroduction() {
-		return booksIntroduction;
+		return globalBooksIntroduction;
 	}
 
 	/**
 	 * @param booksIntroduction the booksIntroduction to set
 	 */
 	public void setBooksIntroduction(String booksIntroduction) {
-		this.booksIntroduction = booksIntroduction;
+		this.globalBooksIntroduction = booksIntroduction;
 	}
 
 	/**
@@ -192,6 +192,45 @@ public class BibleBook implements Serializable {
 	public void setChapters(LinkedHashMap<Integer, BibleChapter> hashChapters) {
 		this.hashChapters = hashChapters;
 	}
+	
+	/**
+	 * @param newBook the book to add
+	 */
+	public void addChapter(BibleChapter newChapter) throws Exception {
+		Integer newChapterKey = hashChapters.size()+1;
+		
+		LinkedHashMap<Integer, BibleChapter> hashChapters = this.getChapters();
+		// Get a set of the entries
+		Set<Entry<Integer, BibleChapter>> mapChapters = hashChapters.entrySet();
+		// Get an iterator
+		Iterator<Entry<Integer, BibleChapter>> itChapters = mapChapters.iterator();
+		// Display elements
+		while(itChapters.hasNext()) {
+			Entry<Integer, BibleChapter> me = itChapters.next();
+			BibleChapter chapter = (BibleChapter) me.getValue();
+			if (newChapter.getChapterName() == chapter.getChapterName()) {
+				// Don't add a chapter with a name that already exists
+				throw new Exception("Chapter name " + newChapter.getChapterName() + " already used.");
+			}
+			if (newChapterKey == chapter.getChapterKey()) {
+				// Don't add a chapter with a key that already exists
+				throw new Exception("Chapter key " + newChapter.getChapterKey() + " already used.");
+			}
+		}
+		newChapter.setChapterKey(newChapterKey);
+		hashChapters.put(newChapterKey, newChapter);
+    }
+	
+	/**
+	 * @param chapterNumber the chapter number to get
+	 */
+	public BibleChapter getChapter(Integer chapterNumber) throws Exception {
+		if (hashChapters.containsKey(chapterNumber)) {
+			return (BibleChapter)hashChapters.get(chapterNumber);
+		} else {
+			throw new Exception("Chapter " + chapterNumber.toString() + " unreachable.");
+		}
+    }
 	
 	@Override
 	public String toString() {

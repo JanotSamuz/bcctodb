@@ -8,12 +8,11 @@ public class App
 {
     public static void main( String[] args ) throws Exception
     {
-        //System.out.println("Hello World!");
+        System.out.println("Start initialization BCCBible");
     	
-    	//BCCEpub bccEpub = new BCCEpub();
-        //bccEpub.Read();
-
     	@SuppressWarnings("unused")
 		BCCBible bccBible = new BCCBible();
+    	
+    	System.out.println("End initialization BCCBible");
     }
 }

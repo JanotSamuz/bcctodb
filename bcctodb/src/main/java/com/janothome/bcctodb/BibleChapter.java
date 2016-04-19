@@ -16,10 +16,14 @@ public class BibleChapter {
 	private String  chapterContent;
 	
 	/**
-	 * 
+	 * @param chapterName
+	 * @param chapterNumber
 	 */
-	public BibleChapter() {
-		// TODO Auto-generated constructor stub
+	public BibleChapter(String chapterName, Integer chapterNumber) {
+		super();
+		
+		setChapterName(chapterName);
+		setChapterNumber(chapterNumber);
 	}
 
 	/**

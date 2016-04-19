@@ -254,9 +254,9 @@ public class Bible implements Serializable {
 				// Don't add a book with a number that already exists expect for psaume book (Ps)
 				throw new Exception("Book number " + newBook.getBookNumber() + " already used.");
 			}
-			if (newBook.geBookName() == book.geBookName()) {
+			if (newBook.getBookName() == book.getBookName()) {
 				// Don't add a book with a name that already exists
-				throw new Exception("Book name " + newBook.geBookName() + " already used.");
+				throw new Exception("Book name " + newBook.getBookName() + " already used.");
 			}
 			if (newBookKey == book.getBookKey()) {
 				// Don't add a book with a key that already exists
