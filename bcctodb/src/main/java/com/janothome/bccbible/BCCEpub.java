@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.janothome.bcctodb;
+package com.janothome.bccbible;
 
 import java.io.FileInputStream;
 import java.io.IOException;

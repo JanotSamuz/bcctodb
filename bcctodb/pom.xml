@@ -31,7 +31,7 @@
 	  <!-- jsoup HTML parser library @ http://jsoup.org/ -->
 	  <groupId>org.jsoup</groupId>
 	  <artifactId>jsoup</artifactId>
-	  <version>1.8.3</version>
+	  <version>1.9.1</version>
 	</dependency>
 	<dependency>
 		<!-- Apache Commons IO library @ http://http://commons.apache.org/proper/commons-io/ -->

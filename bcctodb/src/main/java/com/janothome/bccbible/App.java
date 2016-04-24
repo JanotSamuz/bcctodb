@@ -1,4 +1,4 @@
-package com.janothome.bcctodb;
+package com.janothome.bccbible;
 
 /**
  * 

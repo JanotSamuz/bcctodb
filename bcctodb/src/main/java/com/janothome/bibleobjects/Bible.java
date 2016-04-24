@@ -1,11 +1,14 @@
 /**
  * 
  */
-package com.janothome.bcctodb;
+package com.janothome.bibleobjects;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
+
+import com.janothome.bibleobjects.BibleChapter.TypeChapter;
+
 import java.util.Map.Entry;
 import java.io.Serializable;
 
@@ -235,6 +238,7 @@ public class Bible implements Serializable {
 	 * @param newBook the book to add
 	 */
 	public void addBook(BibleBook newBook) throws Exception {
+		TypeChapter psaume = TypeChapter.PSAUME; 
 		Integer newBookKey = hashBooks.size()+1;
 		
 		LinkedHashMap<Integer, BibleBook> hashBooks = this.getBooks();
@@ -246,11 +250,11 @@ public class Bible implements Serializable {
 		while(itBooks.hasNext()) {
 			Entry<Integer, BibleBook> me = itBooks.next();
 			BibleBook book = (BibleBook) me.getValue();
-			if ((newBook.getBookAbbreviation() == book.getBookAbbreviation()) && !newBook.getBookAbbreviation().toLowerCase().equals(new String("ps"))) {
+			if ((newBook.getBookAbbreviation() == book.getBookAbbreviation()) && !newBook.getBookAbbreviation().toLowerCase().equals(psaume.getAbreviation().toLowerCase())) {
 				// Don't add a book with an abbreviation that already exists expect for psaume book (Ps)
 				throw new Exception("Book abbreviation " + newBook.getBookAbbreviation() + " already used.");
 			}
-			if ((newBook.getBookNumber() == book.getBookNumber()) && !newBook.getBookAbbreviation().toLowerCase().equals(new String("ps"))) {
+			if ((newBook.getBookNumber() == book.getBookNumber()) && !newBook.getBookAbbreviation().toLowerCase().equals(psaume.getAbreviation().toLowerCase())) {
 				// Don't add a book with a number that already exists expect for psaume book (Ps)
 				throw new Exception("Book number " + newBook.getBookNumber() + " already used.");
 			}
@@ -290,7 +294,9 @@ public class Bible implements Serializable {
 		while(itBooks.hasNext()) {
 			Entry<Integer, BibleBook> me = itBooks.next();
 			BibleBook book = (BibleBook) me.getValue();
-			sb.append(book.toString());
+			if (book.toString() != null) {
+				sb.append(book.toString());
+			}
 		}
         return sb.toString();
     }

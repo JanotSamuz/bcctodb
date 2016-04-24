@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.janothome.bcctodb;
+package com.janothome.bibleobjects;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -240,13 +240,21 @@ public class BibleBook implements Serializable {
 		Set<Entry<Integer, BibleChapter>> mapChapters = hashChapters.entrySet();
 		// Get an iterator
 		Iterator<Entry<Integer, BibleChapter>> itChapters = mapChapters.iterator();
+		
+		if (this.getBooksIntroduction() != null) {
+			sb.append(this.getBooksIntroduction());
+		}
+		if (this.getBookIntroduction() != null) {
+			sb.append(this.getBookIntroduction());
+		}
+		
 		// Display elements
 		while(itChapters.hasNext()) {
 			Entry<Integer, BibleChapter> me = itChapters.next();
 			BibleChapter chapter = (BibleChapter) me.getValue();
-			sb.append(this.getBooksIntroduction());
-			sb.append(this.getBookIntroduction());
-			sb.append(chapter.toString());
+			if (chapter.toString() != null) {
+				sb.append(chapter.toString());
+			}
 		}
         return sb.toString(); 
 	}

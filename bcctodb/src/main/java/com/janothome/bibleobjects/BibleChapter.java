@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.janothome.bcctodb;
+package com.janothome.bibleobjects;
 
 /**
  * @author Janot Samuz (janotsamuz+github@gmail.com)
@@ -98,7 +98,30 @@ public class BibleChapter {
 
 	@Override
 	public String toString() {
-        return this.getChapterContent(); 
+		java.lang.StringBuilder sb = new java.lang.StringBuilder();
+		
+		if (this.getChapterIntroduction() != null) {
+			sb.append(this.getChapterIntroduction());
+		}
+		if (this.getChapterContent() != null) {
+			sb.append(this.getChapterContent());
+		}
+		
+		return sb.toString();
 	}
 	
+	public enum TypeChapter {
+		  
+		CHAPTER("Chp"), PSAUME("Ps");
+	    
+	    private String abreviation;
+	      
+	    private TypeChapter(String abreviation) {  
+	    	this.abreviation = abreviation;  
+	    }
+	      
+	    public String getAbreviation() {  
+	    	return this.abreviation;
+	    }
+	}
 }

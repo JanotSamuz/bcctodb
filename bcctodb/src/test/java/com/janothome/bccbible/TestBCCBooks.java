@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.janothome.bcctodb;
+package com.janothome.bccbible;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,15 +15,15 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import junit.framework.TestCase;
+import com.janothome.bccbible.BCCBible;
+import com.janothome.bibleobjects.BibleBook;
+import com.janothome.bibleobjects.TestBooks;
 
 /**
  * @author Janot Samuz (janotsamuz+github@gmail.com)
  *
  */
-public class TestBCCBooks extends TestCase {
-
-	private BCCBible bccBible;
+public class TestBCCBooks extends TestBooks {
 	
 	/**
 	 * @param name
@@ -37,7 +37,7 @@ public class TestBCCBooks extends TestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		this.bccBible = new BCCBible();
+		this.bible = new BCCBible();
 	}
 
 	/* (non-Javadoc)
@@ -49,34 +49,15 @@ public class TestBCCBooks extends TestCase {
 
 	public void testBCCBooksNumber()
     {
-		LinkedHashMap<Integer, BibleBook> hashBooks = bccBible.getBooks();
+		LinkedHashMap<Integer, BibleBook> hashBooks = bible.getBooks();
 		assertTrue(hashBooks.size() == 77);
     }
 	
-	public void testBCCBooksKeysOrder()
-    {
-		LinkedHashMap<Integer, BibleBook> hashBooks = bccBible.getBooks();
-		// Get a set of the entries
-		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
-		// Get an iterator
-		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
-		Integer indice = 0;
-		// Display elements
-		while(itBooks.hasNext()) {
-			Entry<Integer, BibleBook> me = itBooks.next();
-			Integer bookKey = (Integer) me.getKey();
-			BibleBook book = (BibleBook) me.getValue();
-			indice++;
-			if (bookKey != indice || book.getBookKey() != indice) {
-				assertTrue(false);
-			}
-		}
-		assertTrue(true);
-    }
+	
 	
 	public void testBCCBooksName() throws Exception
     {
-		LinkedHashMap<Integer, BibleBook> hashBooks = bccBible.getBooks();
+		LinkedHashMap<Integer, BibleBook> hashBooks = bible.getBooks();
 		// Get a set of the entries
 		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
 		// Get an iterator
@@ -103,6 +84,41 @@ public class TestBCCBooks extends TestCase {
 				titleBookFromXhtml = el.text();
 			}
 			if (!book.getBookName().equals(titleBookFromXhtml)) {
+				assertTrue(false);
+			}
+		}
+		assertTrue(true);
+    }
+	
+	public void testBCCBooksContent() throws Exception
+    {
+		LinkedHashMap<Integer, BibleBook> hashBooks = bible.getBooks();
+		// Get a set of the entries
+		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
+		// Get an iterator
+		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
+		// Display elements
+		while(itBooks.hasNext()) {
+			Entry<Integer, BibleBook> me = itBooks.next();
+			//Integer bookKey = (Integer) me.getKey();
+			BibleBook book = (BibleBook) me.getValue();
+			String xhtmlText = new String();
+			ClassLoader classLoader = getClass().getClassLoader();
+			try {
+				xhtmlText = IOUtils.toString((InputStream) classLoader.getResource("xhtml/"+book.getSourceFile()).getContent(), "UTF-8");
+			} catch (IOException e) {
+				e.printStackTrace();
+				assertTrue(false);
+			}
+			Document doc = Jsoup.parse(xhtmlText);
+			Element el = doc.select("body").first();
+			String bodyBookFromXhtml = new String();
+			if (el == null) {
+				throw new Exception("Unexpected error when reading XTHML file.");
+			} else {
+				bodyBookFromXhtml = el.html();
+			}
+			if (!book.toString().equals(bodyBookFromXhtml)) {
 				assertTrue(false);
 			}
 		}

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.janothome.bcctodb;
+package com.janothome.bccbible;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +17,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.janothome.bibleobjects.Bible;
+import com.janothome.bibleobjects.BibleBook;
+import com.janothome.bibleobjects.BibleChapter;
+import com.janothome.bibleobjects.BibleChapter.TypeChapter;
 
 /**
  * @author Janot Samuz (janotsamuz+github@gmail.com)
@@ -80,6 +85,7 @@ public final class BCCBible extends Bible {
 	}
 	
 	private void initBooks_Definition() throws Exception {
+		TypeChapter psaume = TypeChapter.PSAUME;
 		// Insertion des livres dans l'ordre
 		try {
 			this.addBook(new BibleBook("Genèse","Gn",1,"Ancien Testament","Genese.xhtml"));
@@ -104,11 +110,11 @@ public final class BCCBible extends Bible {
 			this.addBook(new BibleBook("Premier livre des Machabées","1 M",20,"Ancien Testament","1Machabees.xhtml"));
 			this.addBook(new BibleBook("Deuxième livre des Machabées","2 M",21,"Ancien Testament","2Machabees.xhtml"));
 			this.addBook(new BibleBook("Job","Jb",22,"Ancien Testament","Job.xhtml"));
-			this.addBook(new BibleBook("Psaumes - Livre Premier (1-41)","Ps",23,"Ancien Testament","1Psaumes.xhtml"));
-			this.addBook(new BibleBook("Psaumes - Livre Deuxième (42-72)","Ps",23,"Ancien Testament","2Psaumes.xhtml"));
-			this.addBook(new BibleBook("Psaumes - Livre Troisième (73-89)","Ps",23,"Ancien Testament","3Psaumes.xhtml"));
-			this.addBook(new BibleBook("Psaumes - Livre Quatrième (90-106)","Ps",23,"Ancien Testament","4Psaumes.xhtml"));
-			this.addBook(new BibleBook("Psaumes - Livre Cinquième (107-150)","Ps",23,"Ancien Testament","5Psaumes.xhtml"));
+			this.addBook(new BibleBook("Psaumes - Livre Premier (1-41)",psaume.getAbreviation(),23,"Ancien Testament","1Psaumes.xhtml"));
+			this.addBook(new BibleBook("Psaumes - Livre Deuxième (42-72)",psaume.getAbreviation(),23,"Ancien Testament","2Psaumes.xhtml"));
+			this.addBook(new BibleBook("Psaumes - Livre Troisième (73-89)",psaume.getAbreviation(),23,"Ancien Testament","3Psaumes.xhtml"));
+			this.addBook(new BibleBook("Psaumes - Livre Quatrième (90-106)",psaume.getAbreviation(),23,"Ancien Testament","4Psaumes.xhtml"));
+			this.addBook(new BibleBook("Psaumes - Livre Cinquième (107-150)",psaume.getAbreviation(),23,"Ancien Testament","5Psaumes.xhtml"));
 			this.addBook(new BibleBook("Proverbes","Pr",24,"Ancien Testament","Proverbes.xhtml"));
 			this.addBook(new BibleBook("Ecclésiaste ou Qohélet","Qo",25,"Ancien Testament","Ecclesiaste.xhtml"));
 			this.addBook(new BibleBook("Cantique des cantiques","Ct",26,"Ancien Testament","cantique_des_cantiques.xhtml"));
@@ -238,12 +244,16 @@ public final class BCCBible extends Bible {
 	// TODO Development in progress...
 	private void initBook_ChaptersContent(Document doc, BibleBook book) throws Exception {
 		String bookTitleTag = "h2";
-		String chapterText = "chapitre";
-		String psaumeText = "psaume";
+		String chapterText = "Chapitre";
+		String psaumeText = "Psaume";
 		String chapterTag = "h3";
+		String chapterTagArround = "p";
+		Boolean chapterIsStartingWithChapitre;
+		Boolean chapterIsStartingWithPsaume;
 		Element firstChapterTag = doc.select(chapterTag).first();
-		Element secondChapterTag = doc.select(chapterTag).eq(1).first();
 		Element firstBookTag = doc.select(bookTitleTag).first();
+		java.lang.StringBuilder sbChapterIntroduction = null;
+		
 		if (firstChapterTag == null) {
 			// Il n'y a qu'un seul chapitre non nommé (pas de tag H3)
 			// Le contenu du chapitre sera alors tout le texte après le tag H2 du titre du livre  
@@ -251,38 +261,89 @@ public final class BCCBible extends Bible {
 			BibleChapter uniqueChapter = new BibleChapter("", 1);
 			uniqueChapter.setChapterContent(firstChapterElement.html());
 			book.addChapter(uniqueChapter);
-		} else if (secondChapterTag == null) {
-			throw new Exception("Unexpected error when reading XTHML file for books introduction on book <" + book.getBookName() + ">");
-		} else if ( (      (!firstChapterTag.text().toLowerCase().startsWith(chapterText))
-				        && (secondChapterTag.text().toLowerCase().startsWith(chapterText))
-					) ||
-					(      (!firstChapterTag.text().toLowerCase().startsWith(psaumeText))
-					        && (secondChapterTag.text().toLowerCase().startsWith(psaumeText))
-					)
-				  ) {
-			// Tag H3 présent au moins 2 fois : présence d'aux moins 2 chapitres avec une introduction
-			java.lang.StringBuilder sbChaptersIntroduction = new java.lang.StringBuilder();
-			sbChaptersIntroduction.append(firstChapterTag.outerHtml());
-			sbChaptersIntroduction.append(System.getProperty("line.separator"));
-			Elements siblings = firstChapterTag.siblingElements();
-			List<Element> elementsBetween = new ArrayList<Element>();
-			for (int i = 0; i < siblings.size(); i++) {
-				Element sibling = siblings.get(i);
-				if (! chapterTag.equals(sibling.tagName()))
-					elementsBetween.add(sibling);
-				else {
-					processElementsBetween(elementsBetween, sbChaptersIntroduction);
-					elementsBetween.clear();
-					break;
+		} else {
+			BibleChapter previousChapter = null;
+			Integer chapterIndice = 0;
+			//String chapterStarting;	// TODO : Code à déplacer dans les JUnit
+			String chapterName = null;
+			Integer chapterNumber = 0;
+			Elements chapters = doc.select(chapterTag);
+			for (Element chapter : chapters) {
+				chapterIsStartingWithChapitre = chapter.text().toLowerCase().startsWith(chapterText.toLowerCase());
+				chapterIsStartingWithPsaume = chapter.text().toLowerCase().startsWith(psaumeText.toLowerCase());
+				// TODO : Code à déplacer dans les JUnit
+				//if (chapterIsStartingWithChapitre) {
+				//	chapterStarting = chapterText;
+				//}
+				//if (chapterIsStartingWithPsaume) {
+				//	chapterStarting = psaumeText;
+				//}
+				if ( chapterIsStartingWithChapitre || chapterIsStartingWithPsaume ) {
+					chapterIndice++;
+					// TODO : Test à déplacer dans les JUnit
+					//if (chapterIsStartingWithChapitre && !chapter.text().startsWith(new String(chapterStarting + " " + chapterIndice.toString()))) {
+					//	// Le titre du chapitre ne commence pas par "Chapitre X"
+					//	// Pas de test pour les psaumes car il y a 5 livres pour les psaumes.
+					//	throw new Exception("Unexpected error when reading XTHML file for chapters labels on book <" + book.getBookName() + ">");
+					//}
+					chapterName = chapter.text();
+					chapterNumber = chapterIndice;
+					previousChapter = new BibleChapter(chapterName, chapterNumber);
+					java.lang.StringBuilder sbChapterContent = new java.lang.StringBuilder();
+					
+					// TODO : Code à nettoyer et à simplifier 
+					Elements siblings = doc.getElementsByIndexGreaterThan(chapter.elementSiblingIndex());
+					List<Element> elementsBetween = new ArrayList<Element>();
+					for (int i = 0; i < siblings.size(); i++) {
+						Element sibling = siblings.get(i);
+						if (i==0 && chapterTagArround.equals(sibling.tagName())) {
+							elementsBetween.add(sibling);
+							processElementsBetween(elementsBetween, sbChapterContent);
+							elementsBetween.clear();
+							break;
+						} else {
+							/*if (! chapterTag.equals(sibling.tagName()))
+								elementsBetween.add(sibling);
+							else {
+								processElementsBetween(elementsBetween, sbChapterContent);
+								elementsBetween.clear();
+								break;
+							}*/
+						}
+					}
+					previousChapter.setChapterContent(sbChapterContent.toString());
+					if (sbChapterIntroduction != null) {
+						previousChapter.setChapterIntroduction(sbChapterIntroduction.toString());
+					}
+					book.addChapter(previousChapter);
+					sbChapterIntroduction = null;
+				} else {
+					// Il s'agit d'un tag H3 représentant une introduction au chapitre
+					// A mémoriser dans une variable pour ajout dans le prochain chapitre
+					sbChapterIntroduction = new java.lang.StringBuilder();
+					
+					// TODO : Code à nettoyer et à simplifier 
+					Elements siblings = doc.getElementsByIndexGreaterThan(chapter.elementSiblingIndex());
+					List<Element> elementsBetween = new ArrayList<Element>();
+					for (int i = 0; i < siblings.size(); i++) {
+						Element sibling = siblings.get(i);
+						if (i==0 && chapterTag.equals(sibling.tagName())) {
+							elementsBetween.add(sibling);
+							processElementsBetween(elementsBetween, sbChapterIntroduction);
+							elementsBetween.clear();
+							break;
+						} else {
+							/*if (! chapterTag.equals(sibling.tagName()))
+								elementsBetween.add(sibling);
+							else {
+								processElementsBetween(elementsBetween, sbChapterContent);
+								elementsBetween.clear();
+								break;
+							}*/
+						}
+					}
 				}
 			}
-			
-			//Elements chapters = doc.select(chapterTag);
-			//for (Element chapter : chapters) {
-				
-			//}
-			
-			//chapter.setChapterIntroduction(sbChaptersIntroduction.toString());
 		}
 	}
 	
