@@ -72,11 +72,15 @@ public final class BCCBible extends Bible {
 			Document doc = Jsoup.parse(xhtmlText);
 			
 			// Fill global books introduction
-			this.initBook_GlobalBooksIntroduction(doc, book);
+			//this.initBook_GlobalBooksIntroduction(doc, book, "h2");	// Pour le premier livre des Psaumes
+			//this.initBook_GlobalBooksIntroduction(doc, book, "h1");	// Pour le premier livre de la Genese
 			
 			
 			// Fill book introduction
-			this.initBook_BookIntroduction(doc, book);
+			//this.initBook_BookIntroduction(doc, book);
+			
+			// Fill global books introduction
+			this.initBook_NEWBooksIntroduction(doc, book);
 			
 			// Fill chapters content
 			this.initBook_ChaptersContent(doc, book);
@@ -171,14 +175,13 @@ public final class BCCBible extends Bible {
 		}
 	}
 	
-	private void initBook_GlobalBooksIntroduction(Document doc, BibleBook book) throws Exception {
-		String bookTag = "h2";
+	private void initBook_GlobalBooksIntroduction(Document doc, BibleBook book, String bookTag) throws Exception {
 		Element firstTitle = doc.select(bookTag).first();
 		Element lastTitle = doc.select(bookTag).last();
 		if (firstTitle == null || lastTitle == null) {
 			throw new Exception("Unexpected error when reading XTHML file for books introduction on book <" + book.getBookName() + ">");
 		} else if (!firstTitle.text().equals(lastTitle.text())) {
-			// H2 présent 2 fois : Titre de l'ensemble des livres + Titre du livre
+			// Hx présent 2 fois : Titre de l'ensemble des livres + Titre du livre
 			java.lang.StringBuilder sbBooksIntroduction = new java.lang.StringBuilder();
 			sbBooksIntroduction.append(firstTitle.outerHtml());
 			sbBooksIntroduction.append(System.getProperty("line.separator"));
@@ -194,8 +197,40 @@ public final class BCCBible extends Bible {
 					break;
 				}
 			}
+			String currentBooksIntroduction = book.getBooksIntroduction();
+			if (currentBooksIntroduction != null) {
+				throw new Exception("Books introduction already defined on book <" + book.getBookName() + ">");
+			}
 			book.setBooksIntroduction(sbBooksIntroduction.toString());
 		}
+		
+	}
+	
+	private void initBook_NEWBooksIntroduction(Document doc, BibleBook book) throws Exception {
+		String bodyTag = "body";
+		String chapterTagFirst = "h3";
+		Element body = doc.select(bodyTag).first();
+		
+		java.lang.StringBuilder sbBooksIntroduction = new java.lang.StringBuilder();
+		Elements siblings = body.getAllElements();
+		List<Element> elementsBetween = new ArrayList<Element>();
+		for (int i = 0; i < siblings.size(); i++) {
+			Element sibling = siblings.get(i);
+			if (! bodyTag.equals(sibling.tagName())) {
+				if (! chapterTagFirst.equals(sibling.tagName()))
+					elementsBetween.add(sibling);
+				else {
+					processElementsBetween(elementsBetween, sbBooksIntroduction);
+					elementsBetween.clear();
+					break;
+				}
+			}
+		}
+		String currentBooksIntroduction = book.getBooksIntroduction();
+		if (currentBooksIntroduction != null) {
+			throw new Exception("Books introduction already defined on book <" + book.getBookName() + ">");
+		}
+		book.setBooksIntroduction(sbBooksIntroduction.toString());		
 	}
 	
 	private void initBook_BookIntroduction(Document doc, BibleBook book) throws Exception {
