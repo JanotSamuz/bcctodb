@@ -278,6 +278,10 @@ public final class BCCBible extends Bible {
 	
 	// TODO Development in progress...
 	private void initBook_ChaptersContent(Document doc, BibleBook book) throws Exception {
+		// Page JSOUP de test : https://try.jsoup.org/
+		// TODO Contenu de tous les chapitres : CSS Query : "body h3:contains(chapitre) + *"
+		// TODO Titre de tous les chapitres : CSS Query : "body h3:contains(chapitre)"
+		
 		String bookTitleTag = "h2";
 		String chapterText = "Chapitre";
 		String psaumeText = "Psaume";
