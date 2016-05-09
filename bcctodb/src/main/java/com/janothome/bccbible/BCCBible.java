@@ -80,10 +80,12 @@ public final class BCCBible extends Bible {
 			//this.initBook_BookIntroduction(doc, book);
 			
 			// Fill global books introduction
-			this.initBook_NEWBooksIntroduction(doc, book);
+			//this.initBook_NEWBooksIntroduction(doc, book);
 			
 			// Fill chapters content
-			this.initBook_ChaptersContent(doc, book);
+			//this.initBook_ChaptersContent(doc, book);
+			
+			this.initBook_FillIt(doc, book);
 			
 		}
 	}
@@ -274,6 +276,13 @@ public final class BCCBible extends Bible {
 			}
 		}
 		book.setBookIntroduction(sbBookIntroduction.toString());
+	}
+	
+	private void initBook_FillIt(Document doc, BibleBook book) throws Exception {
+		String bodyTag = "body";
+		String chapterTagFirst = "h3";
+		Element body = doc.select(bodyTag).first();
+		String bodyHtml = body.html();
 	}
 	
 	// TODO Development in progress...
