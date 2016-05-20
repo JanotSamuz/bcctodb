@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
@@ -280,9 +282,35 @@ public final class BCCBible extends Bible {
 	
 	private void initBook_FillIt(Document doc, BibleBook book) throws Exception {
 		String bodyTag = "body";
-		String chapterTagFirst = "h3";
+		String bookIntro;
+		String bookContent;
+		Integer intCheck = 0;
 		Element body = doc.select(bodyTag).first();
 		String bodyHtml = body.html();
+		String regexIntro = "([\\S\\s]*?)(<h3 class=\"sigil_not_in_toc\">(?:Psaume .*|<u>Chapitre .*<\\/u>)<\\/h3>?[\\S\\s]*)";
+		Pattern pIntro = Pattern.compile(regexIntro);
+		Matcher mIntro = pIntro.matcher(bodyHtml);
+		/*if (!mIntro.matches()) {
+			throw new Exception("Unexpected error when getting introduction (Err #1) from book <" + book.getBookName() + ">");
+		}*/
+		if (mIntro.groupCount() != 2) {
+			throw new Exception("Unexpected error when getting introduction (Err #2) from book <" + book.getBookName() + ">");
+		}
+		while (mIntro.find()) {
+			intCheck++;
+			bookIntro = mIntro.group(1);
+			bookContent = mIntro.group(2);
+		}
+		// TODO : gérer les livres sans chapitres
+		if ( (intCheck != 1) && 
+				(book.getBookName() != "Abdias") && 
+				(book.getBookName() != "Épître de Saint Paul à Philémon") && 
+				(book.getBookName() != "Deuxième Épître de Saint Jean") && 
+				(book.getBookName() != "Troisième Épître de Saint Jean") &&
+				(book.getBookName() != "Épître de Saint Jude")
+			) {
+			throw new Exception("Unexpected error when getting introduction (Err #3) from book <" + book.getBookName() + ">");
+		}
 	}
 	
 	// TODO Development in progress...
