@@ -282,34 +282,51 @@ public final class BCCBible extends Bible {
 	
 	private void initBook_FillIt(Document doc, BibleBook book) throws Exception {
 		String bodyTag = "body";
-		String bookIntro;
-		String bookContent;
-		Integer intCheck = 0;
+		String bookIntro = null;
+		String bookContent = null;
+		Integer intCheckIncludingChapitres = 0;
+		Integer intCheckWithoutChapitres = 0;
 		Element body = doc.select(bodyTag).first();
 		String bodyHtml = body.html();
-		String regexIntro = "([\\S\\s]*?)(<h3 class=\"sigil_not_in_toc\">(?:Psaume .*|<u>Chapitre .*<\\/u>)<\\/h3>?[\\S\\s]*)";
-		Pattern pIntro = Pattern.compile(regexIntro);
-		Matcher mIntro = pIntro.matcher(bodyHtml);
-		/*if (!mIntro.matches()) {
-			throw new Exception("Unexpected error when getting introduction (Err #1) from book <" + book.getBookName() + ">");
-		}*/
-		if (mIntro.groupCount() != 2) {
+		String regexIntroIncludingChapitres = "([\\S\\s]*?)(<h3 class=\"sigil_not_in_toc\">(?:Psaume .*|<u>Chapitre .*<\\/u>)<\\/h3>?[\\S\\s]*)";
+		Pattern pIntroIncludingChapitres = Pattern.compile(regexIntroIncludingChapitres);
+		Matcher mIntroIncludingChapitres = pIntroIncludingChapitres.matcher(bodyHtml);
+		if (mIntroIncludingChapitres.groupCount() != 2) {
 			throw new Exception("Unexpected error when getting introduction (Err #2) from book <" + book.getBookName() + ">");
 		}
-		while (mIntro.find()) {
-			intCheck++;
-			bookIntro = mIntro.group(1);
-			bookContent = mIntro.group(2);
+		while (mIntroIncludingChapitres.find()) {
+			intCheckIncludingChapitres++;
+			bookIntro = mIntroIncludingChapitres.group(1);
+			bookContent = mIntroIncludingChapitres.group(2);
 		}
-		// TODO : gérer les livres sans chapitres
-		if ( (intCheck != 1) && 
-				(book.getBookName() != "Abdias") && 
-				(book.getBookName() != "Épître de Saint Paul à Philémon") && 
-				(book.getBookName() != "Deuxième Épître de Saint Jean") && 
-				(book.getBookName() != "Troisième Épître de Saint Jean") &&
-				(book.getBookName() != "Épître de Saint Jude")
-			) {
+		// Gérer les livres sans chapitres
+		if ( (intCheckIncludingChapitres == 0) && (
+				(book.getBookName() == "Abdias") || 
+				(book.getBookName() == "Épître de Saint Paul à Philémon") || 
+				(book.getBookName() == "Deuxième Épître de Saint Jean") || 
+				(book.getBookName() == "Troisième Épître de Saint Jean") ||
+				(book.getBookName() == "Épître de Saint Jude")
+			  
+			) ) {
+			String regexIntroWithoutChapitres = "([\\S\\s]*?)(<h2 align=\"center\">(?:.*)<\\/h2>?[\\S\\s]*)";
+			Pattern pIntroWithoutChapitres = Pattern.compile(regexIntroWithoutChapitres);
+			Matcher mIntroWithoutChapitres = pIntroWithoutChapitres.matcher(bodyHtml);
+			if (mIntroWithoutChapitres.groupCount() != 2) {
+				throw new Exception("Unexpected error when getting introduction (Err #4) from book <" + book.getBookName() + ">");
+			}
+			while (mIntroWithoutChapitres.find()) {
+				intCheckWithoutChapitres++;
+				bookIntro = mIntroWithoutChapitres.group(1);
+				bookContent = mIntroWithoutChapitres.group(2);
+			}
+			if (intCheckWithoutChapitres != 1) {
+				throw new Exception("Unexpected error when getting introduction (Err #5) from book <" + book.getBookName() + ">");
+			}
+		} else if (intCheckIncludingChapitres != 1) {
 			throw new Exception("Unexpected error when getting introduction (Err #3) from book <" + book.getBookName() + ">");
+		}
+		if (bookIntro != null && bookIntro.length() > 0) {
+			book.setBookIntroduction(bookIntro);
 		}
 	}
 	
