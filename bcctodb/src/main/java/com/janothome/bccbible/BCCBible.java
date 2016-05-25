@@ -327,11 +327,12 @@ public final class BCCBible extends Bible {
 		}
 		if (bookIntro != null && bookIntro.length() > 0) {
 			book.setBookIntroduction(bookIntro);
+			initBook_ChaptersContent(doc, book, bookContent);
 		}
 	}
 	
 	// TODO Development in progress...
-	private void initBook_ChaptersContent(Document doc, BibleBook book) throws Exception {
+	private void initBook_ChaptersContent(Document doc, BibleBook book, String bookContent) throws Exception {
 		// Page JSOUP de test : https://try.jsoup.org/
 		// TODO Contenu de tous les chapitres : CSS Query : "body h3:contains(chapitre) + *"
 		// TODO Titre de tous les chapitres : CSS Query : "body h3:contains(chapitre)"
