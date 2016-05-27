@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
@@ -17,7 +19,9 @@ import org.jsoup.nodes.Element;
 
 import com.janothome.bccbible.BCCBible;
 import com.janothome.bibleobjects.BibleBook;
+import com.janothome.bibleobjects.BibleChapter;
 import com.janothome.bibleobjects.TestBooks;
+import com.janothome.bibleobjects.BibleChapter.TypeChapter;
 
 /**
  * @author Janot Samuz (janotsamuz+github@gmail.com)
@@ -125,4 +129,103 @@ public class TestBCCBooks extends TestBooks {
 		assertTrue(true);
     }
 	
+	public void testBCCChaptersNumber() throws Exception
+    {
+		LinkedHashMap<Integer, BibleBook> hashBooks = bible.getBooks();
+		// Get a set of the entries
+		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
+		// Get an iterator
+		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
+		// Browse books
+		while(itBooks.hasNext()) {
+			Entry<Integer, BibleBook> me = itBooks.next();
+			//Integer bookKey = (Integer) me.getKey();
+			BibleBook book = (BibleBook) me.getValue();
+			
+			LinkedHashMap<Integer, BibleChapter> hashChapters = book.getChapters();
+			// Get a set of the entries
+			Set<Entry<Integer, BibleChapter>> mapChapters = hashChapters.entrySet();
+			// Get an iterator
+			Iterator<Entry<Integer, BibleChapter>> itChapters = mapChapters.iterator();
+			
+			// TODO Traiter le cas des numéros de psaume qui se poursuivent sur l'ensemble des 5 livres des psaumes
+			// TODO Traiter le cas particulier du chapitre 14 du livre de Daniel
+			TypeChapter psaume = TypeChapter.PSAUME;
+			if (book.getBookAbbreviation() != psaume.getAbreviation() && !book.getBookName().equals("Daniel")) {
+				if (!book.isWithoutChapitres()) {
+					// Test pour les livres avec des chapitres
+					// Browse chapters
+					while(itChapters.hasNext()) {
+						Entry<Integer, BibleChapter> meSub = itChapters.next();
+						BibleChapter chapter = (BibleChapter) meSub.getValue();
+						
+						// TODO Supprimer les balises <u> du titre du chapitre
+						String chapterTitle = chapter.getChapterName();
+						String regexChapitre = "(?:Psaume |<u>Chapitre )(\\d*)";
+						Pattern pChapitre = Pattern.compile(regexChapitre);
+						Matcher mChapitre = pChapitre.matcher(chapterTitle);
+						if (mChapitre.groupCount() != 1) {
+							assertTrue(false);
+						}
+						while (mChapitre.find()) {
+							String chapterNumberStr = mChapitre.group(1);
+							if (chapter.getChapterNumber() != Integer.parseInt(chapterNumberStr)) {
+								assertTrue(false);
+							}
+						}
+					}
+				} else {
+					// Test pour les livres sans chapitres
+					// Browse chapters (only one !)
+					while(itChapters.hasNext()) {
+						Entry<Integer, BibleChapter> meSub = itChapters.next();
+						BibleChapter chapter = (BibleChapter) meSub.getValue();
+						if (chapter.getChapterNumber() != 1) {
+							assertTrue(false);
+						}
+					}
+				}
+			}
+		}
+		assertTrue(true);
+    }
+	
+	public void testBCCBooksWithoutChapters() throws Exception
+    {
+		LinkedHashMap<Integer, BibleBook> hashBooks = bible.getBooks();
+		// Get a set of the entries
+		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
+		// Get an iterator
+		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
+		// Browse books
+		while(itBooks.hasNext()) {
+			Entry<Integer, BibleBook> me = itBooks.next();
+			//Integer bookKey = (Integer) me.getKey();
+			BibleBook book = (BibleBook) me.getValue();
+			
+			LinkedHashMap<Integer, BibleChapter> hashChapters = book.getChapters();
+			
+			if (book.isWithoutChapitres() && hashChapters.size() != 1) {
+				assertTrue(false);
+			}
+			
+			// Get a set of the entries
+			Set<Entry<Integer, BibleChapter>> mapChapters = hashChapters.entrySet();
+			// Get an iterator
+			Iterator<Entry<Integer, BibleChapter>> itChapters = mapChapters.iterator();
+			
+			// Browse chapters (only one !)
+			while(itChapters.hasNext()) {
+				Entry<Integer, BibleChapter> meSub = itChapters.next();
+				BibleChapter chapter = (BibleChapter) meSub.getValue();
+				
+				// aucun titre du chapitre n'est attendu ici
+				String chapterTitle = chapter.getChapterName();
+				if (book.isWithoutChapitres() && chapterTitle != null && chapterTitle.length() != 0) {
+					assertTrue(false);
+				}
+			}
+		}
+		assertTrue(true);
+    }
 }

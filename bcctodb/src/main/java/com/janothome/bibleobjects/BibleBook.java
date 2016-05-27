@@ -22,12 +22,14 @@ public class BibleBook implements Serializable {
 	private String 	bookName;			// unique
 	private String 	bookAbbreviation;	// unique
 	private Integer	bookKey;			// unique
-    private Integer bookNumber;
-    private String 	bookTestament;
-    private String 	sourceFile;
-    private String 	globalBooksIntroduction;
-    private String 	bookIntroduction;
-    private LinkedHashMap<Integer, BibleChapter> hashChapters;
+    private Integer bookNumber = null;
+    private String 	bookTestament = null;
+    private String 	sourceFile = null;
+    private String 	globalBooksIntroduction = null;
+    private String 	bookIntroduction = null;
+    private Boolean bookWithoutChapitres = false;
+    
+	private LinkedHashMap<Integer, BibleChapter> hashChapters;
 	
 	/**
 	 * @param bookName
@@ -45,6 +47,7 @@ public class BibleBook implements Serializable {
 		setBookNumber(bookNumber);
 		setBookTestament(bookTestament);
 		setSourceFile(sourceFile);
+		setBookWithoutChapitres(false);
 		
 		initHashChapters();
 	}
@@ -204,7 +207,7 @@ public class BibleBook implements Serializable {
 		Set<Entry<Integer, BibleChapter>> mapChapters = hashChapters.entrySet();
 		// Get an iterator
 		Iterator<Entry<Integer, BibleChapter>> itChapters = mapChapters.iterator();
-		// Display elements
+		// Browse chapters
 		while(itChapters.hasNext()) {
 			Entry<Integer, BibleChapter> me = itChapters.next();
 			BibleChapter chapter = (BibleChapter) me.getValue();
@@ -232,6 +235,20 @@ public class BibleBook implements Serializable {
 		}
     }
 	
+	/**
+	 * @return the bookWithoutChapitres
+	 */
+	public Boolean isWithoutChapitres() {
+		return bookWithoutChapitres;
+	}
+
+	/**
+	 * @param bookWithoutChapitres the bookWithoutChapitres to set
+	 */
+	public void setBookWithoutChapitres(Boolean bookWithoutChapitres) {
+		this.bookWithoutChapitres = bookWithoutChapitres;
+	}
+	
 	@Override
 	public String toString() {
 		java.lang.StringBuilder sb = new java.lang.StringBuilder();
@@ -248,7 +265,7 @@ public class BibleBook implements Serializable {
 			sb.append(this.getBookIntroduction());
 		}
 		
-		// Display elements
+		// Browse chapters
 		while(itChapters.hasNext()) {
 			Entry<Integer, BibleChapter> me = itChapters.next();
 			BibleChapter chapter = (BibleChapter) me.getValue();

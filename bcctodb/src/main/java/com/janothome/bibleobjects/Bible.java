@@ -246,7 +246,7 @@ public class Bible implements Serializable {
 		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
 		// Get an iterator
 		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
-		// Display elements
+		// Browse books
 		while(itBooks.hasNext()) {
 			Entry<Integer, BibleBook> me = itBooks.next();
 			BibleBook book = (BibleBook) me.getValue();
@@ -290,7 +290,7 @@ public class Bible implements Serializable {
 		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
 		// Get an iterator
 		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
-		// Display elements
+		// Browse books
 		while(itBooks.hasNext()) {
 			Entry<Integer, BibleBook> me = itBooks.next();
 			BibleBook book = (BibleBook) me.getValue();

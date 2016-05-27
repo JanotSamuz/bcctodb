@@ -33,7 +33,7 @@ public class TestBooks extends TestCase {
 		// Get an iterator
 		Iterator<Entry<Integer, BibleBook>> itBooks = mapBooks.iterator();
 		Integer indice = 0;
-		// Display elements
+		// Browse books
 		while(itBooks.hasNext()) {
 			Entry<Integer, BibleBook> me = itBooks.next();
 			Integer bookKey = (Integer) me.getKey();

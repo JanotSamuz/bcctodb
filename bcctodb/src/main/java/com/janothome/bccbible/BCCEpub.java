@@ -41,7 +41,7 @@ public class BCCEpub {
 		this.BCCPath = "H:\\Documents\\Projet-BIBLE\\Bible_Crampon_1923_complete\\Bible_Crampon_1923_missionweb_upgraded.epub";
 	}
 	
-	public void Read() {
+	public void Read() throws Exception {
 		
 		// read epub file
 		EpubReader epubReader = new EpubReader();
@@ -51,8 +51,7 @@ public class BCCEpub {
 			List<String> titles = book.getMetadata().getTitles();
 			System.out.println("book title:" + (titles.isEmpty() ? "book has no title" : titles.get(0)));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Exception("Unexpected error when reading epub.");
 		}
 		
 	}
