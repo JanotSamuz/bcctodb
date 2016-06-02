@@ -131,6 +131,11 @@ public class TestBCCBooks extends TestBooks {
 	
 	public void testBCCChaptersNumber() throws Exception
     {
+		TypeChapter psaume = TypeChapter.PSAUME;
+		Integer lastPsaumesCounter = 0;
+		Integer psaumesCounter = 0;
+		Integer indicePsaumesBooks = 0;
+		
 		LinkedHashMap<Integer, BibleBook> hashBooks = bible.getBooks();
 		// Get a set of the entries
 		Set<Entry<Integer, BibleBook>> mapBooks = hashBooks.entrySet();
@@ -142,16 +147,22 @@ public class TestBCCBooks extends TestBooks {
 			//Integer bookKey = (Integer) me.getKey();
 			BibleBook book = (BibleBook) me.getValue();
 			
+			if (book.getBookAbbreviation() == psaume.getAbreviation()) {
+				indicePsaumesBooks++;
+				if (indicePsaumesBooks >= 2) {
+					psaumesCounter = psaumesCounter + lastPsaumesCounter;
+				}
+				lastPsaumesCounter = book.getNumberOfChapters();
+			}
+			
 			LinkedHashMap<Integer, BibleChapter> hashChapters = book.getChapters();
 			// Get a set of the entries
 			Set<Entry<Integer, BibleChapter>> mapChapters = hashChapters.entrySet();
 			// Get an iterator
 			Iterator<Entry<Integer, BibleChapter>> itChapters = mapChapters.iterator();
 			
-			// TODO Traiter le cas des numéros de psaume qui se poursuivent sur l'ensemble des 5 livres des psaumes
-			// TODO Traiter le cas particulier du chapitre 14 du livre de Daniel
-			TypeChapter psaume = TypeChapter.PSAUME;
-			if (book.getBookAbbreviation() != psaume.getAbreviation() && !book.getBookName().equals("Daniel")) {
+			// TODO Traiter les cas particuliers des chapitres 13 et 14 du livre de Daniel
+			if (!book.getBookName().equals("Daniel")) {
 				if (!book.isWithoutChapitres()) {
 					// Test pour les livres avec des chapitres
 					// Browse chapters
@@ -169,8 +180,14 @@ public class TestBCCBooks extends TestBooks {
 						}
 						while (mChapitre.find()) {
 							String chapterNumberStr = mChapitre.group(1);
-							if (chapter.getChapterNumber() != Integer.parseInt(chapterNumberStr)) {
-								assertTrue(false);
+							if (book.getBookAbbreviation() == psaume.getAbreviation() && indicePsaumesBooks > 1) {
+								if ((chapter.getChapterNumber() + psaumesCounter) != Integer.parseInt(chapterNumberStr)) {
+									assertTrue(false);
+								}
+							} else {
+								if (chapter.getChapterNumber() != Integer.parseInt(chapterNumberStr)) {
+									assertTrue(false);
+								}
 							}
 						}
 					}

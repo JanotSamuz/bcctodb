@@ -223,7 +223,6 @@ public final class BCCBible extends Bible {
 			BibleChapter uniqueChapter = new BibleChapter("", 1);
 			uniqueChapter.setChapterContent(bookContent);
 			book.addChapter(uniqueChapter);
-			book.setBookWithoutChapitres(true);
 		} else {
 			BibleChapter newChapter = null;
 			Integer chapterIndice = 0;

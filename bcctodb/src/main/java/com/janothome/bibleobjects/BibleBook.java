@@ -27,7 +27,7 @@ public class BibleBook implements Serializable {
     private String 	sourceFile = null;
     private String 	globalBooksIntroduction = null;
     private String 	bookIntroduction = null;
-    private Boolean bookWithoutChapitres = false;
+    private Integer numberOfChapters = 0;
     
 	private LinkedHashMap<Integer, BibleChapter> hashChapters;
 	
@@ -47,7 +47,6 @@ public class BibleBook implements Serializable {
 		setBookNumber(bookNumber);
 		setBookTestament(bookTestament);
 		setSourceFile(sourceFile);
-		setBookWithoutChapitres(false);
 		
 		initHashChapters();
 	}
@@ -222,6 +221,9 @@ public class BibleBook implements Serializable {
 		}
 		newChapter.setChapterKey(newChapterKey);
 		hashChapters.put(newChapterKey, newChapter);
+		
+		// On incrémente le nombre de chapitre du livre
+		numberOfChapters++;
     }
 	
 	/**
@@ -239,16 +241,16 @@ public class BibleBook implements Serializable {
 	 * @return the bookWithoutChapitres
 	 */
 	public Boolean isWithoutChapitres() {
-		return bookWithoutChapitres;
+		return (numberOfChapters <= 1);
 	}
 
 	/**
-	 * @param bookWithoutChapitres the bookWithoutChapitres to set
+	 * @return the numberOfChapters
 	 */
-	public void setBookWithoutChapitres(Boolean bookWithoutChapitres) {
-		this.bookWithoutChapitres = bookWithoutChapitres;
+	public Integer getNumberOfChapters() {
+		return numberOfChapters;
 	}
-	
+
 	@Override
 	public String toString() {
 		java.lang.StringBuilder sb = new java.lang.StringBuilder();
