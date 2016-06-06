@@ -40,7 +40,7 @@ public final class BCCBible extends Bible {
 	public BCCBible() throws Exception {
 		super("Bible Chanoine Crampon");
 		
-		this.setVersion("1.0");
+		this.setVersion("3 juin 2016");
 		this.setLongName("La Saint Bible d'après les textes originaux par l'abbé Augustin Crampon, chanoine d'Amiens - Edition 1923");
 		this.setDigitalization("Edition numérique/relecture et vérifications par Jean-Marie WEBER pour www.mission-web.com");
 		this.setEdition("Edition révisée par les Pères de la Cie de Jésus avec la collaboration de Professeurs de S. Sulpice - SOCIÉTÉ DE S. JEAN L'ÉVANGÉLISTE - 1923");
@@ -98,8 +98,8 @@ public final class BCCBible extends Bible {
 			this.addBook(new BibleBook("Tobie","Tb",17,"Ancien Testament","Tobie.xhtml"));
 			this.addBook(new BibleBook("Judith","Jdt",18,"Ancien Testament","Judith.xhtml"));
 			this.addBook(new BibleBook("Esther","Est",19,"Ancien Testament","Esther.xhtml"));
-			this.addBook(new BibleBook("Premier livre des Machabées","1 M",20,"Ancien Testament","1Machabees.xhtml"));
-			this.addBook(new BibleBook("Deuxième livre des Machabées","2 M",21,"Ancien Testament","2Machabees.xhtml"));
+			this.addBook(new BibleBook("Premier livre des Machabées","1Mach",20,"Ancien Testament","1Machabees.xhtml"));
+			this.addBook(new BibleBook("Deuxième livre des Machabées","2Mach",21,"Ancien Testament","2Machabees.xhtml"));
 			this.addBook(new BibleBook("Job","Jb",22,"Ancien Testament","Job.xhtml"));
 			this.addBook(new BibleBook("Psaumes - Livre Premier (1-41)",psaume.getAbreviation(),23,"Ancien Testament","1Psaumes.xhtml"));
 			this.addBook(new BibleBook("Psaumes - Livre Deuxième (42-72)",psaume.getAbreviation(),23,"Ancien Testament","2Psaumes.xhtml"));

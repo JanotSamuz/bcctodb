@@ -80,14 +80,29 @@ public class TestBCCBooks extends TestBooks {
 				assertTrue(false);
 			}
 			Document doc = Jsoup.parse(xhtmlText);
-			Element el = doc.select("h2").last();
-			String titleBookFromXhtml = new String();
+			Element el = null;
+			String titleBookH2FromXhtml = null;
+			String titleBookHEADFromXhtml = null;
+			
+			titleBookHEADFromXhtml = doc.title();
+			
+			el = doc.select("h2").last();
+			titleBookH2FromXhtml = new String();
 			if (el == null) {
 				throw new Exception("Unexpected error when reading XTHML file.");
 			} else {
-				titleBookFromXhtml = el.text();
+				titleBookH2FromXhtml = el.text();
 			}
-			if (!book.getBookName().equals(titleBookFromXhtml)) {
+			
+			/*el = doc.select("title").first();
+			titleBookHEADFromXhtml = new String();
+			if (el == null) {
+				throw new Exception("Unexpected error when reading XTHML file.");
+			} else {
+				titleBookHEADFromXhtml = el.text();
+			}*/
+			
+			if (!book.getBookName().equals(titleBookH2FromXhtml) || !book.getBookName().equals(titleBookHEADFromXhtml)) {
 				assertTrue(false);
 			}
 		}
@@ -161,45 +176,42 @@ public class TestBCCBooks extends TestBooks {
 			// Get an iterator
 			Iterator<Entry<Integer, BibleChapter>> itChapters = mapChapters.iterator();
 			
-			// TODO Traiter les cas particuliers des chapitres 13 et 14 du livre de Daniel
-			if (!book.getBookName().equals("Daniel")) {
-				if (!book.isWithoutChapitres()) {
-					// Test pour les livres avec des chapitres
-					// Browse chapters
-					while(itChapters.hasNext()) {
-						Entry<Integer, BibleChapter> meSub = itChapters.next();
-						BibleChapter chapter = (BibleChapter) meSub.getValue();
-						
-						// TODO Supprimer les balises <u> du titre du chapitre
-						String chapterTitle = chapter.getChapterName();
-						String regexChapitre = "(?:Psaume |<u>Chapitre )(\\d*)";
-						Pattern pChapitre = Pattern.compile(regexChapitre);
-						Matcher mChapitre = pChapitre.matcher(chapterTitle);
-						if (mChapitre.groupCount() != 1) {
-							assertTrue(false);
-						}
-						while (mChapitre.find()) {
-							String chapterNumberStr = mChapitre.group(1);
-							if (book.getBookAbbreviation() == psaume.getAbreviation() && indicePsaumesBooks > 1) {
-								if ((chapter.getChapterNumber() + psaumesCounter) != Integer.parseInt(chapterNumberStr)) {
-									assertTrue(false);
-								}
-							} else {
-								if (chapter.getChapterNumber() != Integer.parseInt(chapterNumberStr)) {
-									assertTrue(false);
-								}
+			if (!book.isWithoutChapitres()) {
+				// Test pour les livres avec des chapitres
+				// Browse chapters
+				while(itChapters.hasNext()) {
+					Entry<Integer, BibleChapter> meSub = itChapters.next();
+					BibleChapter chapter = (BibleChapter) meSub.getValue();
+					
+					// TODO Supprimer les balises <u> du titre du chapitre
+					String chapterTitle = chapter.getChapterName();
+					String regexChapitre = "(?:Psaume |<u>Chapitre )(\\d*)";
+					Pattern pChapitre = Pattern.compile(regexChapitre);
+					Matcher mChapitre = pChapitre.matcher(chapterTitle);
+					if (mChapitre.groupCount() != 1) {
+						assertTrue(false);
+					}
+					while (mChapitre.find()) {
+						String chapterNumberStr = mChapitre.group(1);
+						if (book.getBookAbbreviation() == psaume.getAbreviation() && indicePsaumesBooks > 1) {
+							if ((chapter.getChapterNumber() + psaumesCounter) != Integer.parseInt(chapterNumberStr)) {
+								assertTrue(false);
+							}
+						} else {
+							if (chapter.getChapterNumber() != Integer.parseInt(chapterNumberStr)) {
+								assertTrue(false);
 							}
 						}
 					}
-				} else {
-					// Test pour les livres sans chapitres
-					// Browse chapters (only one !)
-					while(itChapters.hasNext()) {
-						Entry<Integer, BibleChapter> meSub = itChapters.next();
-						BibleChapter chapter = (BibleChapter) meSub.getValue();
-						if (chapter.getChapterNumber() != 1) {
-							assertTrue(false);
-						}
+				}
+			} else {
+				// Test pour les livres sans chapitres
+				// Browse chapters (only one !)
+				while(itChapters.hasNext()) {
+					Entry<Integer, BibleChapter> meSub = itChapters.next();
+					BibleChapter chapter = (BibleChapter) meSub.getValue();
+					if (chapter.getChapterNumber() != 1) {
+						assertTrue(false);
 					}
 				}
 			}
