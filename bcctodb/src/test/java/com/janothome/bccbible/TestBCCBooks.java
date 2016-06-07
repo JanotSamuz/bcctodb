@@ -183,15 +183,16 @@ public class TestBCCBooks extends TestBooks {
 					Entry<Integer, BibleChapter> meSub = itChapters.next();
 					BibleChapter chapter = (BibleChapter) meSub.getValue();
 					
-					// TODO Supprimer les balises <u> du titre du chapitre
 					String chapterTitle = chapter.getChapterName();
-					String regexChapitre = "(?:Psaume |<u>Chapitre )(\\d*)";
+					String regexChapitre = "(?:Psaume |Chapitre )(\\d*)";
 					Pattern pChapitre = Pattern.compile(regexChapitre);
 					Matcher mChapitre = pChapitre.matcher(chapterTitle);
 					if (mChapitre.groupCount() != 1) {
 						assertTrue(false);
 					}
+					Integer indiceTagChapitres = 0;
 					while (mChapitre.find()) {
+						indiceTagChapitres++;
 						String chapterNumberStr = mChapitre.group(1);
 						if (book.getBookAbbreviation() == psaume.getAbreviation() && indicePsaumesBooks > 1) {
 							if ((chapter.getChapterNumber() + psaumesCounter) != Integer.parseInt(chapterNumberStr)) {
@@ -202,6 +203,9 @@ public class TestBCCBooks extends TestBooks {
 								assertTrue(false);
 							}
 						}
+					}
+					if (indiceTagChapitres != 1) {
+						assertTrue(false);
 					}
 				}
 			} else {

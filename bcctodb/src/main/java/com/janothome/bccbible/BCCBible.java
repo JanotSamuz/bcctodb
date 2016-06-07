@@ -227,21 +227,41 @@ public final class BCCBible extends Bible {
 			BibleChapter newChapter = null;
 			Integer chapterIndice = 0;
 			Integer chapterNumber = 0;
+			String chapterNameWithTags = null;
 			String chapterName = null;
 			String chapterContent = null;
 			String chapterIntroduction = null;
-			String regexChapitres = "(<h3 class=\"sigil_not_in_toc\">(Psaume .*|<u>Chapitre .*<\\/u>)<\\/h3>?[\\S]*?)([\\S\\s]*?(?=(?=<h3 class=\"sigil_not_in_toc\">(?:Psaume .*|<u>Chapitre .*<\\/u>)<\\/h3>)|(?=\\Z)))";
-			Pattern pChapitres = Pattern.compile(regexChapitres);
-			Matcher mChapitres = pChapitres.matcher(bookContent);
-			if (mChapitres.groupCount() != 3) {
+			Integer indiceTagChapitres = 0;
+			String regexChapitresWithTags = "(<h3 class=\"sigil_not_in_toc\">(Psaume .*|<u>Chapitre .*<\\/u>)<\\/h3>?[\\S]*?)([\\S\\s]*?(?=(?=<h3 class=\"sigil_not_in_toc\">(?:Psaume .*|<u>Chapitre .*<\\/u>)<\\/h3>)|(?=\\Z)))";
+			Pattern pChapitresWithTags = Pattern.compile(regexChapitresWithTags);
+			Matcher mChapitresWithTags = pChapitresWithTags.matcher(bookContent);
+			if (mChapitresWithTags.groupCount() != 3) {
 				throw new Exception("Unexpected error when getting chapitres (Err #1) from book <" + book.getBookName() + ">");
 			}
-			while (mChapitres.find()) {
+			while (mChapitresWithTags.find()) {
 				chapterIndice++;
 				chapterNumber = chapterIndice;
-				chapterIntroduction = mChapitres.group(1);
-				chapterName = mChapitres.group(2);	// TODO Supprimer les balises <u> du titre du chapitre
-				chapterContent = mChapitres.group(3);
+				chapterIntroduction = mChapitresWithTags.group(1);
+				chapterNameWithTags = mChapitresWithTags.group(2);
+				
+				String regexChapitres = "(?:<u>)(Chapitre .*)(?:<\\/u>)";
+				Pattern pChapitres = Pattern.compile(regexChapitres);
+				Matcher mChapitres = pChapitres.matcher(chapterNameWithTags);
+				if (mChapitres.groupCount() != 1) {
+					throw new Exception("Unexpected error when getting chapitres (Err #2) from book <" + book.getBookName() + ">");
+				}
+				indiceTagChapitres = 0;
+				while (mChapitres.find()) {
+					indiceTagChapitres++;
+					chapterName = mChapitres.group(1);
+				}
+				if (indiceTagChapitres > 1) {
+					throw new Exception("Unexpected error when getting chapitres (Err #3) from book <" + book.getBookName() + ">");
+				} else if (indiceTagChapitres == 0) {
+					// Il ne s'agit pas d'un chapitre de type "<u>Chapitre xx</u>" mais plutôt d'un psaume
+					chapterName = chapterNameWithTags;
+				}
+				chapterContent = mChapitresWithTags.group(3);
 				newChapter = new BibleChapter(chapterName, chapterNumber);
 				newChapter.setChapterIntroduction(chapterIntroduction);
 				newChapter.setChapterContent(chapterContent);
