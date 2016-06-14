@@ -219,7 +219,7 @@ public final class BCCBible extends Bible {
 		if (bookWithoutChapitres) {
 			// Il n'y a qu'un seul chapitre non nommé (pas de tag H3)
 			// Le contenu du chapitre sera alors tout le texte après le tag H2 du titre du livre
-			// TODO Revoir le titre du chapitre (dans le constructeur BibleChapter) dans le cas d'un livre sans chapitre
+			// TODO Revoir le titre du chapitre (dans le constructeur BibleChapter) dans le cas d'un livre sans chapitre - utiliser une constante ?!
 			BibleChapter uniqueChapter = new BibleChapter("", 1);
 			uniqueChapter.setChapterContent(bookContent);
 			book.addChapter(uniqueChapter);

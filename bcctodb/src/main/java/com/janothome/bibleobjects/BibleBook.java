@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
+// TODO Purger tous les commentaires en français pour de l'anglais ! Ne laisser que les éléments de contenu de la BCC en français ! 
+
 /**
  * @author Janot Samuz (janotsamuz+github@gmail.com)
  *
@@ -196,7 +198,7 @@ public class BibleBook implements Serializable {
 	}
 	
 	/**
-	 * @param newBook the book to add
+	 * @param newChapter the chapter to add
 	 */
 	public void addChapter(BibleChapter newChapter) throws Exception {
 		Integer newChapterKey = hashChapters.size()+1;
@@ -214,9 +216,17 @@ public class BibleBook implements Serializable {
 				// Don't add a chapter with a name that already exists
 				throw new Exception("Chapter name " + newChapter.getChapterName() + " already used.");
 			}
+			// Test sur le ChapterKey
+			// Ce test sur le ChapterKey n'est à priori pas indispensable car setChapterKet() et getChapterKey() ne sont gérées qu'ici dans addChapter()
+			// Donc cette exception ne devrait jamais se produire !
 			if (newChapterKey == chapter.getChapterKey()) {
 				// Don't add a chapter with a key that already exists
 				throw new Exception("Chapter key " + newChapter.getChapterKey() + " already used.");
+			}
+			// Test sur le ChapterNumber
+			if (newChapter.getChapterNumber() == chapter.getChapterNumber()) {
+				// Don't add a chapter with a number that already exists
+				throw new Exception("Chapter number " + newChapter.getChapterNumber() + " already used.");
 			}
 		}
 		newChapter.setChapterKey(newChapterKey);
