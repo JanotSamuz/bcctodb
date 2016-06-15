@@ -157,11 +157,11 @@ public class BibleChapter implements Serializable {
 			// Donc cette exception ne devrait jamais se produire !
 			if (newVersetKey == verset.getVersetKey()) {
 				// Don't add a verset with a key that already exists
-				throw new Exception("Verset key " + newVerset.getVersetKey() + " already used.");
+				throw new Exception("Can't add this new verset. Verset key " + newVerset.getVersetKey() + " already used.");
 			}
 			if (newVerset.getVersetNumber() == verset.getVersetNumber()) {
 				// Don't add a verset with a number that already exists
-				throw new Exception("Verset number " + newVerset.getVersetNumber() + " already used.");
+				throw new Exception("Can't add this new verset. Verset number " + newVerset.getVersetNumber() + " already used.");
 			}
 		}
 		newVerset.setVersetKey(newVersetKey);
@@ -182,7 +182,8 @@ public class BibleChapter implements Serializable {
 		}
     }
 	
-	@Override
+	// Version avec ChapterContent
+	/*@Override
 	public String toString() {
 		java.lang.StringBuilder sb = new java.lang.StringBuilder();
 		
@@ -193,6 +194,31 @@ public class BibleChapter implements Serializable {
 			sb.append(this.getChapterContent());
 		}
 		
+		return sb.toString();
+	}*/
+	
+	// Version avec les versets
+	@Override
+	public String toString() {
+		java.lang.StringBuilder sb = new java.lang.StringBuilder();
+		LinkedHashMap<Integer, BibleVerset> hashVersets = this.getVersets();
+		// Get a set of the entries
+		Set<Entry<Integer, BibleVerset>> mapVersets = hashVersets.entrySet();
+		// Get an iterator
+		Iterator<Entry<Integer, BibleVerset>> itVersets = mapVersets.iterator();
+		
+		if (this.getChapterIntroduction() != null) {
+			sb.append(this.getChapterIntroduction());
+		}
+		
+		// Browse versets
+		while(itVersets.hasNext()) {
+			Entry<Integer, BibleVerset> me = itVersets.next();
+			BibleVerset verset = (BibleVerset) me.getValue();
+			if (verset.toString() != null) {
+				sb.append(verset.toString());
+			}
+		}		
 		return sb.toString();
 	}
 	

@@ -65,4 +65,9 @@ public class BibleVerset {
 	public void setVersetContent(String versetContent) {
 		this.versetContent = versetContent;
 	}
+	
+	@Override
+	public String toString() {
+		return this.getVersetContent();
+	}
 }

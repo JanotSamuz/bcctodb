@@ -221,12 +221,12 @@ public class BibleBook implements Serializable {
 			// Donc cette exception ne devrait jamais se produire !
 			if (newChapterKey == chapter.getChapterKey()) {
 				// Don't add a chapter with a key that already exists
-				throw new Exception("Chapter key " + newChapter.getChapterKey() + " already used.");
+				throw new Exception("Can't add this new chapter. Chapter key " + newChapter.getChapterKey() + " already used.");
 			}
 			// Test sur le ChapterNumber
 			if (newChapter.getChapterNumber() == chapter.getChapterNumber()) {
 				// Don't add a chapter with a number that already exists
-				throw new Exception("Chapter number " + newChapter.getChapterNumber() + " already used.");
+				throw new Exception("Can't add this new chapter. Chapter number " + newChapter.getChapterNumber() + " already used.");
 			}
 		}
 		newChapter.setChapterKey(newChapterKey);

@@ -21,6 +21,7 @@ import com.janothome.bibleobjects.Bible;
 import com.janothome.bibleobjects.BibleBook;
 import com.janothome.bibleobjects.BibleChapter;
 import com.janothome.bibleobjects.BibleChapter.TypeChapter;
+import com.janothome.bibleobjects.BibleVerset;
 
 /**
  * @author Janot Samuz (janotsamuz+github@gmail.com)
@@ -183,11 +184,11 @@ public final class BCCBible extends Bible {
 		}
 		// Gérer les livres sans chapitres
 		if ( (intCheckIncludingChapitres == 0) && (
-				(book.getBookName() == "Abdias") || 
-				(book.getBookName() == "Épître de Saint Paul à Philémon") || 
-				(book.getBookName() == "Deuxième Épître de Saint Jean") || 
-				(book.getBookName() == "Troisième Épître de Saint Jean") ||
-				(book.getBookName() == "Épître de Saint Jude")
+				(book.getBookName().equals(new String("Abdias"))) || 
+				(book.getBookName().equals(new String("Épître de Saint Paul à Philémon"))) || 
+				(book.getBookName().equals(new String("Deuxième Épître de Saint Jean"))) || 
+				(book.getBookName().equals(new String("Troisième Épître de Saint Jean"))) ||
+				(book.getBookName().equals(new String("Épître de Saint Jude")))
 			  
 			) ) {
 			bookWithoutChapitres = true;
@@ -222,6 +223,7 @@ public final class BCCBible extends Bible {
 			// TODO Revoir le titre du chapitre (dans le constructeur BibleChapter) dans le cas d'un livre sans chapitre - utiliser une constante ?!
 			BibleChapter uniqueChapter = new BibleChapter("", 1);
 			uniqueChapter.setChapterContent(bookContent);
+			initBook_VersetsContent(doc, book, uniqueChapter, bookContent);
 			book.addChapter(uniqueChapter);
 		} else {
 			BibleChapter newChapter = null;
@@ -240,6 +242,7 @@ public final class BCCBible extends Bible {
 			}
 			while (mChapitresWithTags.find()) {
 				chapterIndice++;
+				// TODO Affecter chapterNumber avec le numéro réel de chapitre ou psaume et pas l'indice ! => voir testBCCChaptersNumber() 
 				chapterNumber = chapterIndice;
 				chapterIntroduction = mChapitresWithTags.group(1);
 				chapterNameWithTags = mChapitresWithTags.group(2);
@@ -265,7 +268,51 @@ public final class BCCBible extends Bible {
 				newChapter = new BibleChapter(chapterName, chapterNumber);
 				newChapter.setChapterIntroduction(chapterIntroduction);
 				newChapter.setChapterContent(chapterContent);
-				book.addChapter(newChapter);
+				initBook_VersetsContent(doc, book, newChapter, chapterContent);
+				try {
+					book.addChapter(newChapter);
+				} catch (Exception e) {
+					throw new Exception("Unexpected error when adding chapter #" + chapterNumber.toString() + " (<" + chapterName + ">) from book <" + book.getBookName() + ">" + " - " + e.getMessage());
+				}
+			}
+		}
+	}
+	
+	private void initBook_VersetsContent(Document doc, BibleBook book, BibleChapter chapter, String chapterContent) throws Exception {
+		Integer chapitreIndice = 0;
+		Integer versetIndice = 0;
+		String VersetsContent = null;
+		
+		String regexPrepareChapitre = "(?:<p>)([\\S\\s]*)(?:<\\/p>)";
+		Pattern pPrepareChapitre = Pattern.compile(regexPrepareChapitre);
+		Matcher mPrepareChapitre = pPrepareChapitre.matcher(chapterContent);
+		if (mPrepareChapitre.groupCount() != 1) {
+			throw new Exception("Unexpected error when getting versets (Err #1) from book <" + book.getBookName() + "> of chapter #" + chapter.getChapterNumber().toString());
+		}
+		while (mPrepareChapitre.find()) {
+			chapitreIndice++;
+			VersetsContent = mPrepareChapitre.group(1);
+		}
+		if (chapitreIndice != 1) {
+			throw new Exception("Unexpected error when getting versets (Err #2) from book <" + book.getBookName() + "> of chapter #" + chapter.getChapterNumber().toString());
+		}
+		
+		String regexVersets = "^[\\s]+([\\d]+)[\\s]{1}([\\S\\s]*?)(?=(?=^[\\s]+[\\d]+[\\s]{1})|(?=\\Z))";
+		Pattern pVersets = Pattern.compile(regexVersets);
+		Matcher mVersets = pVersets.matcher(VersetsContent);
+		if (mVersets.groupCount() != 2) {
+			throw new Exception("Unexpected error when getting versets (Err #1) from book <" + book.getBookName() + "> of chapter #" + chapter.getChapterNumber().toString());
+		}
+		while (mVersets.find()) {
+			versetIndice++;
+			Integer versetNumber = Integer.parseInt(mVersets.group(1));
+			String versetContent = mVersets.group(2);
+			BibleVerset newVerset = new BibleVerset(versetNumber);
+			newVerset.setVersetContent(versetContent);
+			try {
+				chapter.addVerset(newVerset);
+			} catch (Exception e) {
+				throw new Exception("Unexpected error when adding verset #" + versetNumber.toString() + " of chapter #" + chapter.getChapterNumber().toString() + " (<" + chapter.getChapterName() + ">) from book <" + book.getBookName() + ">" + " - " + e.getMessage());
 			}
 		}
 	}

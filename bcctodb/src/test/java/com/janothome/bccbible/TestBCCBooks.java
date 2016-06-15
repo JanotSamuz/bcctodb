@@ -254,6 +254,7 @@ public class TestBCCBooks extends TestBooks {
 				
 				// aucun titre du chapitre n'est attendu ici
 				String chapterTitle = chapter.getChapterName();
+				// TODO Revoir le titre du chapitre (dans le constructeur BibleChapter) dans le cas d'un livre sans chapitre - utiliser une constante ?!
 				if (book.isWithoutChapitres() && chapterTitle != null && chapterTitle.length() != 0) {
 					assertTrue(false);
 				}
