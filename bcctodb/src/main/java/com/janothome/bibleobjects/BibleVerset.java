@@ -9,10 +9,10 @@ package com.janothome.bibleobjects;
  */
 public class BibleVerset {
 
-	private String  versetContent;
 	private Integer	versetKey;				// unique
-	
 	private Integer versetNumber;			// unique
+	private String  versetIntroduction;
+	private String  versetContent;
 
 	/**
 	 * @param versetNumber
@@ -65,9 +65,31 @@ public class BibleVerset {
 	public void setVersetContent(String versetContent) {
 		this.versetContent = versetContent;
 	}
+
+	/**
+	 * @return the versetIntroduction
+	 */
+	public String getVersetIntroduction() {
+		return versetIntroduction;
+	}
+
+	/**
+	 * @param versetIntroduction the versetIntroduction to set
+	 */
+	public void setVersetIntroduction(String versetIntroduction) {
+		this.versetIntroduction = versetIntroduction;
+	}
 	
 	@Override
 	public String toString() {
-		return this.getVersetContent();
+		java.lang.StringBuilder sb = new java.lang.StringBuilder();
+		
+		if (this.getVersetIntroduction() != null) {
+			sb.append(this.getVersetIntroduction());
+		}
+		
+		sb.append(this.getVersetContent());
+		
+		return sb.toString();
 	}
 }

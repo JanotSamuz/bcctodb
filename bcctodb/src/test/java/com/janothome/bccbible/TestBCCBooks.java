@@ -3,8 +3,10 @@
  */
 package com.janothome.bccbible;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -12,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -129,15 +132,53 @@ public class TestBCCBooks extends TestBooks {
 				e.printStackTrace();
 				assertTrue(false);
 			}
-			Document doc = Jsoup.parse(xhtmlText);
-			Element el = doc.select("body").first();
-			String bodyBookFromXhtml = new String();
-			if (el == null) {
-				throw new Exception("Unexpected error when reading XTHML file.");
+			String bodyBookFromXhtml = null;
+			if (BCCBible.JSOUP_Method) {
+				Document doc = Jsoup.parse(xhtmlText);
+				Element el = doc.select("body").first();
+				bodyBookFromXhtml = new String();
+				if (el == null) {
+					throw new Exception("Unexpected error when reading XTHML file.");
+				} else {
+					bodyBookFromXhtml = el.html();
+				}
 			} else {
-				bodyBookFromXhtml = el.html();
+				Integer bodyIndice = 0;
+				String regexBodyHtml = "(?:<body>)([\\S\\s]*)(?:<\\/body>)";
+				Pattern pBodyHtml = Pattern.compile(regexBodyHtml);
+				Matcher mBodyHtml = pBodyHtml.matcher(xhtmlText);
+				if (mBodyHtml.groupCount() != 1) {
+					throw new Exception("Unexpected error when getting xhtml body content (Err #1) from book <" + book.getBookName() + ">");
+				}
+				while (mBodyHtml.find()) {
+					bodyIndice++;
+					bodyBookFromXhtml = mBodyHtml.group(1);
+				}
+				if (bodyIndice != 1) {
+					throw new Exception("Unexpected error when getting xhtml body content (Err #2) from book <" + book.getBookName() + ">");
+				}
 			}
+			
 			if (!book.toString().equals(bodyBookFromXhtml)) {
+				
+				FileUtils.writeStringToFile(new File("Err_bodyBookFromFile_MethodCommonsIO.txt"), bodyBookFromXhtml);
+				PrintWriter outbodyBookFromFile_1 = null;
+				try {
+					outbodyBookFromFile_1 = new PrintWriter("Err_bodyBookFromFile_MethodPrintWriter.txt");
+					outbodyBookFromFile_1.println(bodyBookFromXhtml);
+				} finally {
+					outbodyBookFromFile_1.close();
+				}
+				
+				FileUtils.writeStringToFile(new File("Err_bodyBookFromObjects_MethodCommonsIO.txt"), book.toString());
+				PrintWriter outbodyBookFromFile_2 = null;
+				try {
+					outbodyBookFromFile_2 = new PrintWriter("Err_bodyBookFromObjects_MethodPrintWriter.txt");
+					outbodyBookFromFile_2.println(book.toString());
+				} finally {
+					outbodyBookFromFile_2.close();
+				}
+				
 				assertTrue(false);
 			}
 		}

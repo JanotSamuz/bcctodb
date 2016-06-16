@@ -20,7 +20,8 @@ public class BibleChapter implements Serializable {
 	private String 	chapterName;			// unique
 	private Integer	chapterKey;				// unique
     private Integer chapterNumber;			// unique
-    private String  chapterIntroduction;
+    private String  startOfChapter;
+    private String  endOfChapter;
 	private String  chapterContent;
 	private Integer numberOfVersets = 0;
 
@@ -61,10 +62,10 @@ public class BibleChapter implements Serializable {
 	}
 
 	/**
-	 * @return the chapterIntroduction
+	 * @return the startOfChapter
 	 */
-	public String getChapterIntroduction() {
-		return chapterIntroduction;
+	public String getStartOfChapter() {
+		return startOfChapter;
 	}
 
 	/**
@@ -82,10 +83,10 @@ public class BibleChapter implements Serializable {
 	}
 
 	/**
-	 * @param chapterIntroduction the chapterIntroduction to set
+	 * @param startOfChapter the startOfChapter to set
 	 */
-	public void setChapterIntroduction(String chapterIntroduction) {
-		this.chapterIntroduction = chapterIntroduction;
+	public void setStartOfChapter(String startOfChapter) {
+		this.startOfChapter = startOfChapter;
 	}
 
 	/**
@@ -137,6 +138,20 @@ public class BibleChapter implements Serializable {
 		return numberOfVersets;
 	}
 	
+	/**
+	 * @return the endOfChapter
+	 */
+	public String getEndOfChapter() {
+		return endOfChapter;
+	}
+
+	/**
+	 * @param endOfChapter the endOfChapter to set
+	 */
+	public void setEndOfChapter(String endOfChapter) {
+		this.endOfChapter = endOfChapter;
+	}
+
     /**
 	 * @param newVerset the verset to add
 	 */
@@ -183,22 +198,25 @@ public class BibleChapter implements Serializable {
     }
 	
 	// Version avec ChapterContent
-	/*@Override
+	@Override
 	public String toString() {
 		java.lang.StringBuilder sb = new java.lang.StringBuilder();
 		
-		if (this.getChapterIntroduction() != null) {
-			sb.append(this.getChapterIntroduction());
+		if (this.getStartOfChapter() != null) {
+			sb.append(this.getStartOfChapter());
 		}
 		if (this.getChapterContent() != null) {
 			sb.append(this.getChapterContent());
 		}
+		if (this.getEndOfChapter() != null) {
+			sb.append(this.getEndOfChapter());
+		}
 		
 		return sb.toString();
-	}*/
+	}
 	
 	// Version avec les versets
-	@Override
+	/*@Override
 	public String toString() {
 		java.lang.StringBuilder sb = new java.lang.StringBuilder();
 		LinkedHashMap<Integer, BibleVerset> hashVersets = this.getVersets();
@@ -207,8 +225,8 @@ public class BibleChapter implements Serializable {
 		// Get an iterator
 		Iterator<Entry<Integer, BibleVerset>> itVersets = mapVersets.iterator();
 		
-		if (this.getChapterIntroduction() != null) {
-			sb.append(this.getChapterIntroduction());
+		if (this.getStartOfChapter() != null) {
+			sb.append(this.getStartOfChapter());
 		}
 		
 		// Browse versets
@@ -218,9 +236,14 @@ public class BibleChapter implements Serializable {
 			if (verset.toString() != null) {
 				sb.append(verset.toString());
 			}
-		}		
+		}
+		
+		if (this.getEndOfChapter() != null) {
+			sb.append(this.getEndOfChapter());
+		}
+		
 		return sb.toString();
-	}
+	}*/
 	
 	public enum TypeChapter {
 		  

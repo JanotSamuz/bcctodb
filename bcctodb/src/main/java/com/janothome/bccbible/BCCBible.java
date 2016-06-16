@@ -33,6 +33,8 @@ public final class BCCBible extends Bible {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	// TODO Supprimer la méthode JSOUP si pas concluante à cause des retours chariots !
+	public static final boolean JSOUP_Method = false;
 
 	/**
 	 * @throws Exception 
@@ -71,7 +73,7 @@ public final class BCCBible extends Bible {
 			}
 			Document doc = Jsoup.parse(xhtmlText);
 			
-			this.initBook_FillIt(doc, book);
+			this.initBook_FillIt(doc, book, xhtmlText);
 			
 		}
 	}
@@ -162,15 +164,35 @@ public final class BCCBible extends Bible {
 		}
 	}
 	
-	private void initBook_FillIt(Document doc, BibleBook book) throws Exception {
+	private void initBook_FillIt(Document doc, BibleBook book, String xhtmlText) throws Exception {
+		String bodyHtml = null;
 		String bodyTag = "body";
 		String bookIntro = null;
 		String bookContent = null;
 		Integer intCheckIncludingChapitres = 0;
 		Integer intCheckWithoutChapitres = 0;
 		Boolean bookWithoutChapitres = false;
-		Element body = doc.select(bodyTag).first();
-		String bodyHtml = body.html();
+		
+		if (JSOUP_Method) {
+			Element body = doc.select(bodyTag).first();
+			bodyHtml = body.html();
+		} else {
+			Integer bodyIndice = 0;
+			// TODO Ajouter un StartOf et un EndOf pour disposer de l'ensemble du livre au format xhtml
+			String regexBodyHtml = "(?:<body>)([\\S\\s]*)(?:<\\/body>)";
+			Pattern pBodyHtml = Pattern.compile(regexBodyHtml);
+			Matcher mBodyHtml = pBodyHtml.matcher(xhtmlText);
+			if (mBodyHtml.groupCount() != 1) {
+				throw new Exception("Unexpected error when getting xhtml body content (Err #1) from book <" + book.getBookName() + ">");
+			}
+			while (mBodyHtml.find()) {
+				bodyIndice++;
+				bodyHtml = mBodyHtml.group(1);
+			}
+			if (bodyIndice != 1) {
+				throw new Exception("Unexpected error when getting xhtml body content (Err #2) from book <" + book.getBookName() + ">");
+			}
+		}
 		String regexIntroIncludingChapitres = "([\\S\\s]*?)(<h3 class=\"sigil_not_in_toc\">(?:Psaume .*|<u>Chapitre .*<\\/u>)<\\/h3>?[\\S\\s]*)";
 		Pattern pIntroIncludingChapitres = Pattern.compile(regexIntroIncludingChapitres);
 		Matcher mIntroIncludingChapitres = pIntroIncludingChapitres.matcher(bodyHtml);
@@ -232,7 +254,8 @@ public final class BCCBible extends Bible {
 			String chapterNameWithTags = null;
 			String chapterName = null;
 			String chapterContent = null;
-			String chapterIntroduction = null;
+			String startOfChapter = null;
+			String endOfChapter = null;
 			Integer indiceTagChapitres = 0;
 			String regexChapitresWithTags = "(<h3 class=\"sigil_not_in_toc\">(Psaume .*|<u>Chapitre .*<\\/u>)<\\/h3>?[\\S]*?)([\\S\\s]*?(?=(?=<h3 class=\"sigil_not_in_toc\">(?:Psaume .*|<u>Chapitre .*<\\/u>)<\\/h3>)|(?=\\Z)))";
 			Pattern pChapitresWithTags = Pattern.compile(regexChapitresWithTags);
@@ -244,7 +267,7 @@ public final class BCCBible extends Bible {
 				chapterIndice++;
 				// TODO Affecter chapterNumber avec le numéro réel de chapitre ou psaume et pas l'indice ! => voir testBCCChaptersNumber() 
 				chapterNumber = chapterIndice;
-				chapterIntroduction = mChapitresWithTags.group(1);
+				startOfChapter = mChapitresWithTags.group(1);
 				chapterNameWithTags = mChapitresWithTags.group(2);
 				
 				String regexChapitres = "(?:<u>)(Chapitre .*)(?:<\\/u>)";
@@ -266,9 +289,29 @@ public final class BCCBible extends Bible {
 				}
 				chapterContent = mChapitresWithTags.group(3);
 				newChapter = new BibleChapter(chapterName, chapterNumber);
-				newChapter.setChapterIntroduction(chapterIntroduction);
-				newChapter.setChapterContent(chapterContent);
-				initBook_VersetsContent(doc, book, newChapter, chapterContent);
+				
+				Integer chapitrePrepareIndice = 0;
+				String VersetsContent = null;
+				String regexPrepareChapitre = "([\\S\\s]*<p>?)([\\S\\s]*)(<\\/p>[\\S\\s]*)";
+				Pattern pPrepareChapitre = Pattern.compile(regexPrepareChapitre);
+				Matcher mPrepareChapitre = pPrepareChapitre.matcher(chapterContent);
+				if (mPrepareChapitre.groupCount() != 3) {
+					throw new Exception("Unexpected error when getting versets (Err #1) from book <" + book.getBookName() + "> of chapter #" + newChapter.getChapterNumber().toString());
+				}
+				while (mPrepareChapitre.find()) {
+					chapitrePrepareIndice++;
+					startOfChapter = startOfChapter + mPrepareChapitre.group(1);
+					VersetsContent = mPrepareChapitre.group(2);
+					endOfChapter = mPrepareChapitre.group(3);
+				}
+				if (chapitrePrepareIndice != 1) {
+					throw new Exception("Unexpected error when getting versets (Err #2) from book <" + book.getBookName() + "> of chapter #" + newChapter.getChapterNumber().toString());
+				}
+				
+				newChapter.setStartOfChapter(startOfChapter);
+				newChapter.setChapterContent(VersetsContent);
+				newChapter.setEndOfChapter(endOfChapter);
+				initBook_VersetsContent(doc, book, newChapter, VersetsContent);
 				try {
 					book.addChapter(newChapter);
 				} catch (Exception e) {
@@ -278,37 +321,23 @@ public final class BCCBible extends Bible {
 		}
 	}
 	
-	private void initBook_VersetsContent(Document doc, BibleBook book, BibleChapter chapter, String chapterContent) throws Exception {
-		Integer chapitreIndice = 0;
+	private void initBook_VersetsContent(Document doc, BibleBook book, BibleChapter chapter, String VersetsContent) throws Exception {
 		Integer versetIndice = 0;
-		String VersetsContent = null;
 		
-		String regexPrepareChapitre = "(?:<p>)([\\S\\s]*)(?:<\\/p>)";
-		Pattern pPrepareChapitre = Pattern.compile(regexPrepareChapitre);
-		Matcher mPrepareChapitre = pPrepareChapitre.matcher(chapterContent);
-		if (mPrepareChapitre.groupCount() != 1) {
-			throw new Exception("Unexpected error when getting versets (Err #1) from book <" + book.getBookName() + "> of chapter #" + chapter.getChapterNumber().toString());
-		}
-		while (mPrepareChapitre.find()) {
-			chapitreIndice++;
-			VersetsContent = mPrepareChapitre.group(1);
-		}
-		if (chapitreIndice != 1) {
-			throw new Exception("Unexpected error when getting versets (Err #2) from book <" + book.getBookName() + "> of chapter #" + chapter.getChapterNumber().toString());
-		}
-		
-		String regexVersets = "^[\\s]+([\\d]+)[\\s]{1}([\\S\\s]*?)(?=(?=^[\\s]+[\\d]+[\\s]{1})|(?=\\Z))";
-		Pattern pVersets = Pattern.compile(regexVersets);
+		String regexVersets = "^([\\S\\s]*?[\\s]+([\\d]+)[\\s]{1})([\\S\\s]*?)(?=(?=^[\\s]+[\\d]+[\\s]{1})|(?=\\Z))";
+		Pattern pVersets = Pattern.compile(regexVersets, Pattern.MULTILINE);
 		Matcher mVersets = pVersets.matcher(VersetsContent);
-		if (mVersets.groupCount() != 2) {
-			throw new Exception("Unexpected error when getting versets (Err #1) from book <" + book.getBookName() + "> of chapter #" + chapter.getChapterNumber().toString());
+		if (mVersets.groupCount() != 3) {
+			throw new Exception("Unexpected error when getting versets (Err #3) from book <" + book.getBookName() + "> of chapter #" + chapter.getChapterNumber().toString());
 		}
 		while (mVersets.find()) {
 			versetIndice++;
-			Integer versetNumber = Integer.parseInt(mVersets.group(1));
-			String versetContent = mVersets.group(2);
+			String versetIntroduction = mVersets.group(1);
+			Integer versetNumber = Integer.parseInt(mVersets.group(2));
+			String versetContent = mVersets.group(3);
 			BibleVerset newVerset = new BibleVerset(versetNumber);
 			newVerset.setVersetContent(versetContent);
+			newVerset.setVersetIntroduction(versetIntroduction);
 			try {
 				chapter.addVerset(newVerset);
 			} catch (Exception e) {

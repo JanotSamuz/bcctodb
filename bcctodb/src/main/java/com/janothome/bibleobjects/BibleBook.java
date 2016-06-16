@@ -270,9 +270,6 @@ public class BibleBook implements Serializable {
 		// Get an iterator
 		Iterator<Entry<Integer, BibleChapter>> itChapters = mapChapters.iterator();
 		
-		if (this.getBooksIntroduction() != null) {
-			sb.append(this.getBooksIntroduction());
-		}
 		if (this.getBookIntroduction() != null) {
 			sb.append(this.getBookIntroduction());
 		}
