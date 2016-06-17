@@ -197,9 +197,7 @@ public class BibleChapter implements Serializable {
 		}
     }
 	
-	// Version avec ChapterContent
-	@Override
-	public String toString() {
+	public String getFullChapterContent() {
 		java.lang.StringBuilder sb = new java.lang.StringBuilder();
 		
 		if (this.getStartOfChapter() != null) {
@@ -215,8 +213,7 @@ public class BibleChapter implements Serializable {
 		return sb.toString();
 	}
 	
-	// Version avec les versets
-	/*@Override
+	@Override
 	public String toString() {
 		java.lang.StringBuilder sb = new java.lang.StringBuilder();
 		LinkedHashMap<Integer, BibleVerset> hashVersets = this.getVersets();
@@ -243,7 +240,7 @@ public class BibleChapter implements Serializable {
 		}
 		
 		return sb.toString();
-	}*/
+	}
 	
 	public enum TypeChapter {
 		  

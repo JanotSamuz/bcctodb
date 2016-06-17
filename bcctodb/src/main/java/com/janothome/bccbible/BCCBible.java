@@ -265,7 +265,7 @@ public final class BCCBible extends Bible {
 			}
 			while (mChapitresWithTags.find()) {
 				chapterIndice++;
-				// TODO Affecter chapterNumber avec le numéro réel de chapitre ou psaume et pas l'indice ! => voir testBCCChaptersNumber() 
+				// TODO Affecter chapterNumber avec le numéro réel de chapitre ou psaume et pas l'indice ! => impact dans la logique des psaumes de testBCCChaptersNumber() 
 				chapterNumber = chapterIndice;
 				startOfChapter = mChapitresWithTags.group(1);
 				chapterNameWithTags = mChapitresWithTags.group(2);
@@ -292,7 +292,7 @@ public final class BCCBible extends Bible {
 				
 				Integer chapitrePrepareIndice = 0;
 				String VersetsContent = null;
-				String regexPrepareChapitre = "([\\S\\s]*<p>?)([\\S\\s]*)(<\\/p>[\\S\\s]*)";
+				String regexPrepareChapitre = "([\\S\\s]*?<p>?)([\\S\\s]*)(<\\/p>[\\S\\s]*)";
 				Pattern pPrepareChapitre = Pattern.compile(regexPrepareChapitre);
 				Matcher mPrepareChapitre = pPrepareChapitre.matcher(chapterContent);
 				if (mPrepareChapitre.groupCount() != 3) {
